@@ -1,20 +1,17 @@
-var id = 0;
-
 class Board {
-    constructor(){
-        this.board = [];
-        this.hex_size = 50;
-        this.map_radius = 2;
-        this.origin;
-        this.padding = 0;
-        this.epsilon = this.padding + 1;
-        this.intersections = [];
+    constructor(_board){
+        this.board = _board.board.map(hex => new Hexagon(hex));    // basically an array of hexagons. gotta cast 
+        this.hex_size = _board.hex_size;
+        this.map_radius = _board.map_radius;
+        this.origin = _board.origin;
+        this.padding = _board.padding;
+        this.epsilon = _board.epsilon;
+        this.intersections = _board.intersections;      // TODO as far for now i have vertices for each hexagon, but i dont have intersections (streets)
     }
 
 
-    init (resourceTypes, values) {
+    init () {
       // generate board
-      this.generateBoard();
       let tmpBoard = [...this.board]; // copy
 
       angleMode(RADIANS);
@@ -38,22 +35,6 @@ class Board {
           //point(this.intersections[i].x, this.intersections[i].y);
       }
     }
-
-
-    generateBoard() {
-      // available resources: shuffle to make each game different
-      shuffleArray(resourceTypes);
-      shuffleArray(values); // no need to shuffle
-
-      for (let i = 0; i < 19; i++) {
-        let value = (resourceTypes[i] == "bandits") ? 7 : values[i];
-        let hex = new Hexagon(i, resourceTypes[i], value);
-
-        this.board.push(hex);
-      }
-    }
-
-
 
     draw_hexagon(center, size, q, r, hex, drawCities = true){
     	var points = [];

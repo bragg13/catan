@@ -3,58 +3,43 @@
  * @version: 19/07/21
  */
 var board;
-var players = [];
-var scene_mgr;
 var mgr;
 var socket;
+var utilsjson;
+var gameinfo = {};
+var SCENE = 'MENU';
 
 /* ===================================== */
 /* =           SCENE MANAGER           = */
 /* ===================================== */
+function preload() {
+  utilsjson = loadJSON('./utils.json');
+
+  // socket stuff
+  socket = io.connect('http://localhost:3000');
+  socket.on('update', data => handleUpdate(data));
+  socket.on('changeScene', data => SCENE = data.newScene);
+
+}
+
 function setup() {
-  createCanvas(canvasW, canvasH);
+  // GUI stuff
+  createCanvas(utilsjson.canvasW, utilsjson.canvasH);
   background("darkkhaki");
 
-  scene_mgr = new SceneManager();
-
-  // preload scenes
-  scene_mgr.addScene(Menu); // Menu is a client based scene
-  scene_mgr.addScene(Game); // Game is a server based scene
-
-  scene_mgr.showNextScene();
-}
-
-function draw() {
-  scene_mgr.draw();
-}
-
-function mousePressed() {
-  scene_mgr.handleEvent("mousePressed");
-}
-
-
-/* ===================================== */
-/* =               MENU                = */
-/* ===================================== */
-function Menu() {
-  this.setup = () => {
-    // socket stuff
-    socket = io.connect('http://localhost:3000');
-
-    socket.on('update', data => console.log(data));    // this should persist through scenes
-
-
-    // GUI stuff
+  // got to call again setup function :c
+  if (SCENE === 'MENU') {
     textSize(28);
-    text("catan", canvasW / 2 - 40, 50);
+    textAlign(CENTER, TOP);
+    text("Game menu", utilsjson.canvasW/2, 25);
 
     // inputs
     username = createInput("", "text");
-    username.position(25, 75);
+    username.position(25, 125);
     username.elt.placeholder = "Username";
 
     gameid = createInput("", "text");
-    gameid.position(25, 100);
+    gameid.position(25, 150);
     gameid.elt.placeholder = "Game ID (leave empty for random)";
 
     button = createButton("play game");
@@ -65,68 +50,56 @@ function Menu() {
 
       } else {
         // connect to gameid
+
         socket.emit('join', {
           username: username.elt.value,
           gameid: gameid.elt.value       // if empty handle from server side
         })
       }
-    });
-  }
 
-  // this.startgame = () => {
-  //   players.push(new Player(user1.elt.value, 1));
-  //   players.push(new Player(user2.elt.value, 2));
-  //   if (user3.elt.value !== "") players.push(new Player(user3.elt.value, 3));
-  //   if (user4.elt.value !== "") players.push(new Player(user4.elt.value, 4));
-  //
-  //   // cleanup and move onto next scene
-  //   removeElements();
-  //   background("darkkhaki");
-  //   scene_mgr.showNextScene();
-  // }
+    });
+
+  } else if (SCENE === 'LOBBY') {
+    removeElements();
+    textSize(28);
+    textAlign(CENTER, TOP);
+    text("Game lobby", utilsjson.canvasW/2, 25);
+
+    textAlign(LEFT);
+    text("Waiting for game #"+gameinfo.gameid, 25, 100);
+    text("Players:", 25, 150);
+    let i=0;
+    for (let player of gameinfo.players) {
+      text("- "+player.name, 25, 180+i*40);
+      i++;
+    }
+
+  } else if (SCENE === 'EARLY_GAME') {
+    removeElements();
+    textSize(28);
+    textAlign(CENTER, TOP);
+    text("Early game", utilsjson.canvasW/2, 25);
+
+    gameinfo.board.init();
+
+
+  } else if (SCENE === 'GAME') {
+    removeElements();
+    textSize(28);
+    textAlign(CENTER, TOP);
+    text("Game started!", utilsjson.canvasW/2, 25);
+  }
 }
 
-function Game(){}
 
 function handleUpdate (data) {
+  console.log(data);
   // get update data
-  let game = data.game;
-  let mgr = data.mgr;
-  let players = data.players;
-  let started = data.started;
+  gameinfo.gameid = data.gameid;
+  gameinfo.players = [...data.players];
+  gameinfo.board = new Board({...data.board});
+  gameinfo.mgr = new Manager({...data.mgr});
+  // gameinfo = {...data};
+  setup();
 
-  if (started) {
-    console.log('Game started');
-  } else {
-    console.log('Game not started');
-
-  }
-
-  // // create GUI
-  // fill("black");
-  // textSize(20);
-  //
-  // // round & dice
-  // text(mgr.round == 0 ? "pre" : mgr.round, );
-  // text(mgr.dice == 0 ? "/" : mgr.dice);
-  //
-  // // players
-  // for (let i = 0; i < players.length; i++) {
-  //   // fill color
-  //   fill((mgr.roundPlayer === players[i].name) ? "red" : "black");
-  //   text(`${players[i].name}`, players[i].guiX, players[i].guiY);
-  // }
-  //
-  // drawSprites();
-  //
-  // // handle rounds
-  // if (mgr.round === 0) {
-  //   // time to decide first colonies
-  // } else {
-  //
-  // }
-  //
-  /* ===================================== */
-  /* =               GAME                = */
-  /* ===================================== */
 }

@@ -1,0 +1,24 @@
+{
+  "maxplayers": 2,
+  "values": [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12],
+  "canvasH": 800,
+  "canvasW": 800,
+  "hexSize": 50,
+
+  "resourceTypes": [
+      "sheep", "sheep", "sheep", "sheep",
+      "wood", "wood", "wood", "wood",
+      "wheat", "wheat", "wheat", "wheat",
+      "clay", "clay", "clay",
+      "rock", "rock", "rock", "bandits"
+  ],
+
+  "resourcecolorMap": {
+    "sheep": "#fdf5e6",
+    "wood": "darkgreen",
+    "wheat": "#f0e68c",
+    "clay": "#ff5722",
+    "rock": "darkgrey",
+    "bandits": "red"
+  }
+}
