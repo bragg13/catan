@@ -91,15 +91,23 @@ function setup() {
   }
 }
 
+/**
+ * Needed to draw sprites and handle mouse pressed
+ */
+function draw() {
+  drawSprites();
+}
 
+/**
+ * Gets updated data from server and casts it
+ * into 'gameinfo' object. Runs setup to write changes.
+ * @param {Object} data The updated data 
+ */
 function handleUpdate (data) {
-  console.log(data);
-  // get update data
   gameinfo.gameid = data.gameid;
   gameinfo.players = [...data.players];
   gameinfo.board = new Board({...data.board});
   gameinfo.mgr = new Manager({...data.mgr});
-  // gameinfo = {...data};
   setup();
 
 }

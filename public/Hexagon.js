@@ -12,6 +12,7 @@ class Hexagon {
     this.type = _hexagon.type;
     this.value = _hexagon.value;
 
+    // vertices are undefined in the beginning
     if (_hexagon.vertices === undefined || _hexagon.vertices === null)
       this.vertices = null;
     else 
@@ -28,11 +29,10 @@ class Hexagon {
    * Sets up handler for mouse.
    */
   craftSprite() {
-    console.log("lmao");
     this.sprite = createSprite(this.centroid.x, this.centroid.y, 50, 50);
     this.sprite.shapeColor = "rgba(0, 0, 0, 0)";
     this.sprite.onMousePressed = () => {
-      console.log("lol");
+      console.log(`[click] hexagon: ${this}`);
     }
   }
 

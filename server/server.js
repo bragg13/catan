@@ -178,7 +178,7 @@ const emitUpdate = (room, data) => {
  * somewhere else)
  */
 const emitBroadcast = (data) => {
-  for (let [key, val] of rooms) {
-    io.to(val.gameid).emit('update', val);
+  for (let [gameid, game] of rooms) {
+    io.to(gameid).emit('update', game);
   }
 }

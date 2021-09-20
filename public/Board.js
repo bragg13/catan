@@ -50,8 +50,8 @@ class Board {
           // create the intersection
           c.sprite = createSprite(c.x, c.y, 15, 15);  // sprite
           c.sprite.shapeColor = 'black';              // sprite color
-          c.sprite.onMousePressed = () => {           // click handler
-            console.log(c.id);
+          c.sprite.onMousePressed = () => {           // intersection click handler
+            console.log(`[click] intersection: ${this}`);
           }
 
           this.intersections.push(c);
