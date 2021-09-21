@@ -9,7 +9,19 @@ class Player {
     this.colonies = [];
     this.cities = [];
     this.dev = [];
-    this.res = [];
+
+    // debug
+    this.resources = [{color: 'red'}, {color: 'green'}, {color: 'yellow'}];
+
+    // prizes
+    this.bestArmy = false;
+    this.longestRoad = false;
+
+    // points
+    this.army = 0;
+
+    // color
+    // this.color = ...
   }
 }
 

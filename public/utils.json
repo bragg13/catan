@@ -1,5 +1,8 @@
 {
-  "maxplayers": 2,
+  "maxplayers": 1,
+  "totRoads": 15,
+  "totColonies": 5,
+  "totCities": 5,
   "values": [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12],
   "canvasH": 800,
   "canvasW": 800,

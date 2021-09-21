@@ -129,7 +129,12 @@ io.sockets.on(
 const joinRoom = (gameid, user, socket) => {
   console.log('joining room ['+gameid+']...');
 
-  rooms.get(gameid).players.push(new Player(user, socket.id));
+  // creating new player and sending it back to client
+  let player = new Player(user, socket.id);
+  socket.emit('set_player', player);
+  
+  // pushing the new player
+  rooms.get(gameid).players.push(player);
   socket.join(gameid);
 
   // player could either be joining a lobby or being the last player needed to start the game
