@@ -34,6 +34,9 @@ class Hexagon {
     this.sprite.onMousePressed = () => {
       console.log(`[click] hexagon: ${this}`);
     }
+    this.sprite.onMouseOver = () => {
+      this.sprite.shapeColor = 
+    }
   }
 
 
