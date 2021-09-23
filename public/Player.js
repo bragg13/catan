@@ -14,6 +14,7 @@ class Player {
     // prizes
     this.prizes =_player.prizes;
     this.longestRoad =_player.longestRoad;
+    this.color = _player.color;
 
   }
 

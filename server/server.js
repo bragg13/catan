@@ -130,7 +130,8 @@ const joinRoom = (gameid, user, socket) => {
   console.log('joining room ['+gameid+']...');
 
   // creating new player and sending it back to client
-  let player = new Player(user, socket.id);
+  let nplayers = rooms.get(gameid).players.length;
+  let player = new Player(user, socket.id, rooms.get(gameid).mgr.playersColors[nplayers]);
   socket.emit('set_player', player);
   
   // pushing the new player

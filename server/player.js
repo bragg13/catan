@@ -1,5 +1,5 @@
 class Player {
-  constructor(name, socketid) {
+  constructor(name, socketid, color) {
     // basic info
     this.name = name;
     this.socketid = socketid;
@@ -21,7 +21,7 @@ class Player {
     this.army = 0;
 
     // color
-    // this.color = ...
+    this.color = color;
   }
 }
 

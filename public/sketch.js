@@ -1,6 +1,6 @@
 /**
  * @author: Andrea Bragante
- * @version: 19/07/21
+ * @version: 19/09/21
  */
 var board;
 var mgr;
@@ -82,8 +82,7 @@ function setup() {
   } else if (SCENE === 'EARLY_GAME') {
     removeElements();
     gameinfo.board.init();
-    // drawPlayerGUI();
-    // gameinfo.board.board[0].draw();
+    drawPlayerGUI();
 
 
   } else if (SCENE === 'GAME') {
@@ -107,7 +106,6 @@ function draw() {
 function drawPlayerGUI () {
   // ready my brush
   fill('black');
-  textStyle(BOLD);
 
   // player name and image (coloured circle atm)
   // fill('red');
@@ -115,10 +113,12 @@ function drawPlayerGUI () {
   
   textSize(25);
   textAlign(LEFT, TOP);
+  fill(player.color);
+  if (gameinfo.mgr.playerTurn === player.name) textStyle(BOLD);
   text(`${player.name}`, 25, 25);
   
+  fill('black');
   textStyle(NORMAL);
-
   
   // army
   textSize(20);
@@ -151,15 +151,21 @@ function drawPlayerGUI () {
   // other players
   textAlign(RIGHT, CENTER);
   textSize(20);
+  text(`People playing:`, utilsjson.canvasW-100, 150);
+  let i=1;
   gameinfo.players.forEach(player => {
-    text(`${player.name}`, utilsjson.canvasW-100, 150);
+    if (player.name !== this.player.name) {
+      fill(player.color);
+      text(`${player.name}`, utilsjson.canvasW-100, 150+50*i);
+      i++;
+    }
   });
 
   
   // cards
   stroke('black');
   strokeWeight(0.5);
-  let i=0;
+  i=0;
   for (let card of player.resources) {
     fill(card.color);
     rect(i*50+220, utilsjson.canvasH-110, 50, 100);

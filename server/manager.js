@@ -1,9 +1,11 @@
 class Manager {
     constructor() {
         this.round = 0;
+        this.dice = 0;
+
         this.players = [];
         this.roundPlayer = "";
-        this.dice = 0;
+        this.playersColors = ['red', 'yellow', 'lightblue', 'orange'];
     }
   
   
@@ -19,13 +21,16 @@ class Manager {
         // whose is it - highlight
         this.roundPlayer = this.players[this.round % this.players.length];
   
-        // roll dice
-        this.dice = this.diceroll();
-  
         // assign resources
   
         // let player make moves
     } 
+
+    getResources = () => {
+
+    }
+
+
 }
 
 module.exports = Manager;
