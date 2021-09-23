@@ -8,6 +8,7 @@ class Hexagon {
    * @param {Hexagon} _hexagon 
    */
   constructor(_hexagon) {
+    console.log(_hexagon);
     this.id = _hexagon.id;
     this.type = _hexagon.type;
     this.value = _hexagon.value;
@@ -20,6 +21,7 @@ class Hexagon {
 
     this.centroid = _hexagon.centroid;
     this.color = _hexagon.color;
+    this.highlightColor = _hexagon.highlightColor;
     
   }
 
@@ -39,7 +41,7 @@ class Hexagon {
     this.setCentroid();
 
     // create the actual sprite and setup the sprite attributes
-    this.sprite = createSprite();
+    this.sprite = createSprite(this.centroid.x, this.centroid.y, 50, 50);
     this.sprite.shapeColor = this.color;
     this.sprite.vertices = [...this.vertices];
     this.sprite.centroid = this.centroid;
@@ -52,11 +54,10 @@ class Hexagon {
 
     // on mouse hover handler
     this.sprite.onMouseOver = () => {
-      console.log(this);
-      this.shapeColor = 'black';
+      this.sprite.shapeColor = this.highlightColor;
     }
     this.sprite.onMouseOut = () => {
-      this.shapeColor = this.color;
+      this.sprite.shapeColor = this.color;
     }
 
     // the beloved draw function
@@ -67,24 +68,30 @@ class Hexagon {
       strokeWeight(0.5);
       fill(this.shapeColor);
 
-      beginShape();
-      let i;
-    	for(i = 1; i <= 6; i++){
-        // draw it
-    		point(this.vertices[i % 6].x, this.vertices[i % 6].y);
-    		vertex(this.vertices[i % 6].x, this.vertices[i % 6].y);
-    		line(this.vertices[i-1].x, this.vertices[i-1].y, this.vertices[i % 6].x, this.vertices[i % 6].y);
-    	}
-    	endShape();
+      push(); 
+        let x = 0;
+        let y = 0;
+        let radius = 50;
+        var angle = TWO_PI / 6;
+        
+        rotate(-100);
+        beginShape();
+        for (var a = 0; a < TWO_PI; a += angle) {
+          var sx = x + cos(a) * radius;
+          var sy = y + sin(a) * radius;
+          vertex(sx, sy);
+        }
+        endShape(CLOSE);
 
-      // draw text inside hex
-      fill( (this.shapeColor=="#fdf5e6" || this.shapeColor=="#f0e68c") ? 0 : 255 );
-      textSize(15);
-      textStyle(BOLD);
-      textAlign(CENTER, CENTER);
-      text(this.value, this.centroid.x + 1, this.centroid.y + 2)
-
-    }
+        rotate(+100);     // remove this to lmao
+        fill( (this.shapeColor=="#fdf5e6" || this.shapeColor=="#f0e68c") ? 0 : 255 );
+        textSize(15);
+        textStyle(BOLD);
+        textAlign(CENTER, CENTER);
+        text(this.value, 1, 2)
+      pop();
+        
+      }
 
   }
 
