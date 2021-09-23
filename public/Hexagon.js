@@ -12,7 +12,7 @@ class Hexagon {
     this.type = _hexagon.type;
     this.value = _hexagon.value;
 
-    // vertices are undefined in the beginning
+    // vertices are undefined in the beginning - are they? TODO
     if (_hexagon.vertices === undefined || _hexagon.vertices === null)
       this.vertices = null;
     else 
@@ -23,30 +23,78 @@ class Hexagon {
     
   }
 
+  // draw() {
+  //   this.sprite.draw();
+  // }
 
   /**
-   * Function to craft the sprite based on centroid and color.
-   * Sets up handler for mouse.
+   * Function called when Board gets instatied the first time.
+   * - set the centroid of the shape
+   * - create the actual sprite
+   * - setup the sprite attributes, copying objects'
+   * - setup the sprite functions
    */
-  craftSprite() {
-    this.sprite = createSprite(this.centroid.x, this.centroid.y, 50, 50);
-    this.sprite.shapeColor = "rgba(0, 0, 0, 0)";
+  setupDrawing() {
+    // set the centroid of the shape
+    this.setCentroid();
+
+    // create the actual sprite and setup the sprite attributes
+    this.sprite = createSprite();
+    this.sprite.shapeColor = this.color;
+    this.sprite.vertices = [...this.vertices];
+    this.sprite.centroid = this.centroid;
+    this.sprite.value = this.value;
+
+    // on mouse click handler
     this.sprite.onMousePressed = () => {
       console.log(`[click] hexagon: ${this}`);
     }
+
+    // on mouse hover handler
     this.sprite.onMouseOver = () => {
-      this.sprite.shapeColor = 
+      console.log(this);
+      this.shapeColor = 'black';
     }
+    this.sprite.onMouseOut = () => {
+      this.shapeColor = this.color;
+    }
+
+    // the beloved draw function
+    this.sprite.draw = function() {
+
+      // brush setup
+      stroke('black');
+      strokeWeight(0.5);
+      fill(this.shapeColor);
+
+      beginShape();
+      let i;
+    	for(i = 1; i <= 6; i++){
+        // draw it
+    		point(this.vertices[i % 6].x, this.vertices[i % 6].y);
+    		vertex(this.vertices[i % 6].x, this.vertices[i % 6].y);
+    		line(this.vertices[i-1].x, this.vertices[i-1].y, this.vertices[i % 6].x, this.vertices[i % 6].y);
+    	}
+    	endShape();
+
+      // draw text inside hex
+      fill( (this.shapeColor=="#fdf5e6" || this.shapeColor=="#f0e68c") ? 0 : 255 );
+      textSize(15);
+      textStyle(BOLD);
+      textAlign(CENTER, CENTER);
+      text(this.value, this.centroid.x + 1, this.centroid.y + 2)
+
+    }
+
   }
 
-
   /**
-   * Function to get the centroid given the vertices. Gonna call this
+   * Function to set the centroid given the vertices. Gonna call this
    * after setting the vertices in the draw function in Board. TODO pass
    * the vertices as parameters. Also calls craftSprite() in the end because
    * yeah
    */
-  getCentroid () {
+  setCentroid () {
     let vertices = this.vertices;
     let centroid = createVector(0, 0);
     let signedArea = 0;
@@ -80,7 +128,6 @@ class Hexagon {
     centroid.y /= (6.0*signedArea);
 
     this.centroid = centroid;
-    this.craftSprite();
   }
 
 }

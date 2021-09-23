@@ -162,6 +162,7 @@ const createRoom = (gameid) => {
 
   room.board = new Board();
   room.board.generateBoard(utilsjson.resourceTypes, utilsjson.values);
+  
   room.mgr = new Manager();
 
   rooms.set(gameid, room);

@@ -68,10 +68,8 @@ function setup() {
 
   } else if (SCENE === 'LOBBY') {
     removeElements();
+    
     textSize(28);
-    // textAlign(CENTER, TOP);
-    // text("Game lobby", utilsjson.canvasW/2, 25);
-
     textAlign(LEFT);
     text("Waiting for game #"+gameinfo.gameid, 25, 100);
     text("Players:", 25, 150);
@@ -83,19 +81,13 @@ function setup() {
 
   } else if (SCENE === 'EARLY_GAME') {
     removeElements();
-    textSize(28);
-    // textAlign(CENTER, TOP);
-    // text("Early game", utilsjson.canvasW/2, 25);
-
     gameinfo.board.init();
-    drawPlayerGUI();
+    // drawPlayerGUI();
+    // gameinfo.board.board[0].draw();
 
 
   } else if (SCENE === 'GAME') {
     removeElements();
-    textSize(28);
-    // textAlign(CENTER, TOP);
-    // text("Game started!", utilsjson.canvasW/2, 25);
   }
 }
 
@@ -105,6 +97,7 @@ function setup() {
  */
 function draw() {
   drawSprites();
+
 }
 
 
