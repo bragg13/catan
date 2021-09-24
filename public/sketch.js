@@ -154,13 +154,40 @@ function drawPlayerGUI () {
   text(`Cities:${utilsjson.totCities - player.cities.length}`, 25, utilsjson.canvasH-75);
 
 
-  // round and dice
-  diceBtn = createSprite(utilsjson.canvasW-50, 25, 50, 50);
-  roundBtn = createSprite(utilsjson.canvasW-50, 50, 50, 50);
+  // round and dice btns
   textAlign(RIGHT, TOP);
+  diceBtn = createSprite(utilsjson.canvasW-50, 25, 30, 30); 
+  diceBtn.draw = function() {
+    fill('red');
+    stroke('black');
+    ellipse(0, 0, 30, 30);
+
+    fill('white');
+    textAlign(CENTER);
+    text(gameinfo.mgr.dice, 0, 0);
+  }
+  diceBtn.onMousePressed = function() {
+    gameinfo.mgr.dice++;
+  }
+
+  roundBtn = createSprite(utilsjson.canvasW-50, 75, 30, 30); 
+  roundBtn.draw = function() {
+    fill('red');
+    stroke('black');
+    ellipse(0, 0, 30, 30);
+
+    fill('white');
+    textAlign(CENTER);
+    text(gameinfo.mgr.round, 0, 0);
+  }
+  roundBtn.onMousePressed = function() {
+    gameinfo.mgr.round++;
+  }
+
+  // round and dice text
   textSize(25);
-  text(`Round ${gameinfo.mgr.round}`, utilsjson.canvasW-25, 25);
-  text(`DICE ${gameinfo.mgr.dice}`, utilsjson.canvasW-25, 50);
+  text(`Round`, utilsjson.canvasW-80, 15);
+  text(`DICE`, utilsjson.canvasW-80, 65);
 
 
   // other players
