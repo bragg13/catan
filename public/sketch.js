@@ -2,13 +2,16 @@
  * @author: Andrea Bragante
  * @version: 19/09/21
  */
-var board;
-var mgr;
+
+/* === MISC === */
 var socket;
 var utilsjson;
 var gameinfo = {};
 var player = {};
 var SCENE = 'MENU';
+
+/* === GUI === */
+var diceBtn, roundBtn;
 
 /**
  * Loads 'utils.json' and initializes socket stuff
@@ -21,7 +24,6 @@ function preload() {
   socket.on('update', data => handleUpdate(data));
   socket.on('changeScene', data => SCENE = data.newScene);
   socket.on('set_player', _player => player = new Player(_player));
-
 }
 
 
@@ -79,9 +81,21 @@ function setup() {
       i++;
     }
 
+    // wont work since not in draw()
+    // let dots = '';
+    // if (frameCount%15==0) dots = '.'; 
+    // if (frameCount%30==0) dots = '..';
+    // if (frameCount%15!=0 && frameCount%30!=0) dots = '...';
+
+    text(`${utilsjson.maxplayers - gameinfo.players.length} player left...`, 25, 250);
+
+
   } else if (SCENE === 'EARLY_GAME') {
     removeElements();
     gameinfo.board.init();
+    
+    if (gameinfo.mgr.playerTurn===player.name) text(`It's your turn to choose`, utilsjson.canvasW/2-10, 10);
+
     drawPlayerGUI();
 
 
@@ -96,7 +110,6 @@ function setup() {
  */
 function draw() {
   drawSprites();
-
 }
 
 
@@ -142,6 +155,8 @@ function drawPlayerGUI () {
 
 
   // round and dice
+  diceBtn = createSprite(utilsjson.canvasW-50, 25, 50, 50);
+  roundBtn = createSprite(utilsjson.canvasW-50, 50, 50, 50);
   textAlign(RIGHT, TOP);
   textSize(25);
   text(`Round ${gameinfo.mgr.round}`, utilsjson.canvasW-25, 25);
@@ -172,6 +187,12 @@ function drawPlayerGUI () {
     i++;
   }
 
+}
+
+
+function sendUpdate (data) {
+  socket.to(gameinfo.gameid).emit('update', gameinfo);  // i could send the manager only
+  
 }
 
 /**
