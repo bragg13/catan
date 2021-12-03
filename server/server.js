@@ -26,9 +26,8 @@ var app = express();
 
 // Set up the server - process.env.PORT is related to deploying on heroku
 var server = app.listen(process.env.PORT || 3000, () => {
-  var host = server.address().address;
   var port = server.address().port;
-  console.log('Example app listening at http://' + host + ':' + port);
+  console.log('Example app listening at http://localhost:' + port);
 });
 
 // I will put in public folder the static files

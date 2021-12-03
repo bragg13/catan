@@ -235,3 +235,9 @@ function handleUpdate (data) {
   setup();
 
 }
+
+function mouseClicked(){
+  var x = floor(mouseX);
+  var y = floor(mouseY);
+  console.log(x+"_"+y);
+}

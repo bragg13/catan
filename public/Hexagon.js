@@ -8,7 +8,6 @@ class Hexagon {
    * @param {Hexagon} _hexagon 
    */
   constructor(_hexagon) {
-    console.log(_hexagon);
     this.id = _hexagon.id;
     this.type = _hexagon.type;
     this.value = _hexagon.value;
@@ -19,15 +18,13 @@ class Hexagon {
     else 
       this.vertices = [..._hexagon.vertices];
 
+    this.edges = [];  // where streets go
+
     this.centroid = _hexagon.centroid;
     this.color = _hexagon.color;
     this.highlightColor = _hexagon.highlightColor;
     
   }
-
-  // draw() {
-  //   this.sprite.draw();
-  // }
 
   /**
    * Function called when Board gets instatied the first time.
@@ -39,6 +36,7 @@ class Hexagon {
   setupDrawing() {
     // set the centroid of the shape
     this.setCentroid();
+    this.setEdges();
 
     // create the actual sprite and setup the sprite attributes
     this.sprite = createSprite(this.centroid.x, this.centroid.y, 50, 50);
@@ -93,6 +91,16 @@ class Hexagon {
         
       }
 
+  }
+
+  setEdges () {
+    var edges = [];
+    for (let a = 0; a < TWO_PI; a += angle) {
+      let sx = x + cos(a) * radius;
+      let sy = y + sin(a) * radius;
+      edges.push(new Edge(sx, sy));      
+    }
+    this.edges = edges;
   }
 
   /**

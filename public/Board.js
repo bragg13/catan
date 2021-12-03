@@ -9,9 +9,10 @@ class Board {
     this.epsilon = this.padding + 1;
     this.origin;
 
-    // spots where players could create stuff
+    // spots where players could create stuff - could treat this as a graph
+    this.graph = new Graph(54);
     this.intersections = [];
-    this.edges = [];                // TODO
+    this.edges = [];
   }
 
 
@@ -36,6 +37,7 @@ class Board {
     for(var i = 0; i < this.intersections.length; i++){
         this.intersections[i].id = i;
         this.intersections[i].setupDrawing();
+        this.graph.addVertex(this.intersections[i]);
         //point(this.intersections[i].x, this.intersections[i].y);
     }
   }
@@ -53,11 +55,31 @@ class Board {
       vertices.push(c);
 
       // if vertex isnt already in my list, I'll add it
-      if(this.intersectionsIncludes(c) == false){
+      // console.log(`int: ${c.x},${c.y}`);
+
+      // check if c is already an intersection
+      let isIntersection = false;
+
+      this.intersections.forEach(el => {
+        if (el.x == c.x && el.y == c.y) {
+          // means this hexagon has this intersection as a vertex
+          el.hexagons.push(hexIndex);
+          isIntersection = true;
+
+        }
+      })
+
+      // never seen before, create the intersection object
+      if (!isIntersection) {
         let int = new Intersection(c);
+        int.hexagons.push(hexIndex);
         this.intersections.push(int);
+
       }
     }
+
+    // ADD EDGES
+
 
     // setting up actual hexagon's vertices and setting it up
     this.board[hexIndex].vertices = [...vertices];

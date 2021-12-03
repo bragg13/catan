@@ -1,7 +1,15 @@
 class Intersection {
   constructor(coords){
-    this.x = coords.x;
-    this.y = coords.y;
+    this.coords = coords;
+    this.x = Math.floor(coords.x);
+    this.y = Math.floor(coords.y);
+
+    this.hexagons = []; 
+    this.size = 0; // default: 0 | when to be selected: 15
+  }
+  
+  changeSize() {
+    this.size = (this.size==5) ? 15 : 0;
   }
   
   setupDrawing() {
@@ -27,7 +35,7 @@ class Intersection {
     // redefines draw function - otherwise first shape is a rect
     this.sprite.draw = () => {
       fill(this.sprite.shapeColor);
-      ellipse(0, 0, 15, 15);
+      ellipse(0, 0, this.size, this.size);
     }
 
   }
