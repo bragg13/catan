@@ -6,13 +6,13 @@ export class Game {
     constructor(id, name, players) {
         this.roomId = id
         this.roomName = name
-
+        this.background = 'skyblue'
+        
         // init game components
         this.turn = 0
-        this.board = new Board()
         this.players = []
         for (let player of players) {
-            this.players.push({
+            this.players.push({     // TODO: replace with Player object
                 id: player.id,
                 username: player.username,
                 inventory: [],
@@ -21,11 +21,17 @@ export class Game {
                 awards: [],
             })
         }
+        this.board = new Board(this.players)
+
         console.log('game created')
 
         // notify players that the game started
-        this.update('GAME_STARTED', {
-            board: this.board,
+        this.update('GAME_STARTED', {})
+
+        io.to(this.roomId).emit('game_init', {
+            server_board: this.board,
+            server_bg: this.background,
+            server_players: this.players        // TODO: might be redundant
         })
 
         // subscribe to player updates
