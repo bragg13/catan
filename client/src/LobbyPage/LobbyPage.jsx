@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Paper, Box, Typography, CircularProgress } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
 export default function LobbyPage({ socket }) {
     const [players, setPlayers] = useState([])
     const [roomInfo, setRoomInfo] = useState()
+    const navigate = useNavigate()
 
     useEffect(() => {
         socket.on('msg_from_server', (data) => {
@@ -19,12 +21,11 @@ export default function LobbyPage({ socket }) {
             }
 
             if (data.event === 'GAME_STARTED') {
-                console.log(data)
+                console.log('game started')
+                navigate('/play')
 
             }
         });
-
-        console.log(players)
 
     }, [socket]);
 

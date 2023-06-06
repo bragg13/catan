@@ -21,6 +21,12 @@ export default function App() {
             <LobbyPage socket={socket} />
           }
         />
+        <Route
+          path='/play'
+          element={
+            <PlayPage socket={socket} />
+          }
+        />
       </Routes>
     </Router>
   )

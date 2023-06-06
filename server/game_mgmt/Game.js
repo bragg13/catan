@@ -1,5 +1,6 @@
 import { Socket } from "socket.io"
 import { io } from "../index.js"
+import { Board } from "./Board.js"
 
 export class Game {
     constructor(id, name, players) {
@@ -29,28 +30,41 @@ export class Game {
 
         // subscribe to player updates
         io.sockets.on('client_updates', data => {
-            console.log(data)
+            handleClientUpdate(data)
         })
 
         console.log('bounds to clients')
-
 
         // // first update
         // this.update()
 
     }
 
+    // CLIENT UPDATES
+    handleClientUpdate = (data) => {
+        console.log('comng from client:')
+        console.log(data)
+    }
+
     update = (event, data) => {
-        io.to(this.roomId).emit('msgs_from_server', {
-            timestamp: new Date().toUTCString(),
+        io.to(this.roomId).emit('msg_from_server', {
+            // timestamp: new Date().toUTCString(),
+            event: event,
+            data: data
+        })
+    }
+
+    gameUpdate = (event, data) => {
+        io.to(this.roomId).emit('game_update_from_server', {
+            // timestamp: new Date().toUTCString(),
             event: event,
             data: data
         })
     }
 
     updatePlayer = (socketId, event, data) => {
-        io.to(socketId).emit('msgs_from_server', {
-            timestamp: new Date().toUTCString(),
+        io.to(socketId).emit('msg_from_server', {
+            // timestamp: new Date().toUTCString(),
             event: event,
             data: data
         })
