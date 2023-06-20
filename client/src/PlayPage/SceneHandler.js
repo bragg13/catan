@@ -11,11 +11,11 @@ export class SceneHandler {
         this.scene.background = new THREE.Color(server_info['server_bg'])
 
         this.board = new Board(server_info['server_board'])
-        console.log(this.board)
         this.turn = null
         this.round = 0
 
         // stuff to be on screen - create
+        this.loadedModels = {}
         this.roads = new THREE.Group()
         this.spots = new THREE.Group()
         this.tiles = new THREE.Group()
@@ -32,14 +32,7 @@ export class SceneHandler {
     init = async () => {
         await this.spawnTiles()
         this.scene.add(this.tiles)
-
-        // this.enterConstructionMode()
-        // console.log(`players: `)
-        // for (let p of this.board.players) {
-        //     console.log(`${p.id} (${p.color})`)
-        // }
-
-        // this.turn = this.board.players[(this.round % 2 == 0) ? 0 : 1]
+        console.log(this.scene.children)
     }
 
     update = () => {
@@ -53,7 +46,6 @@ export class SceneHandler {
         // update animations
         if (this.mixer)
             this.mixer.update(delta)
-
     }
 
     nextTurn = () => {
@@ -78,9 +70,21 @@ export class SceneHandler {
      */
     spawnTiles = async () => {
         let model = null
-        this.board.tiles.forEach(async (el, index) => {
-            model = await loadModel(`/models/${this.board.tiles[index].resource}.glb`)
+
+        // loading models
+        for (let m of ['sheep', 'wood', 'wheat', 'clay', 'rocks', 'bandits']) {
+            model = await loadModel(`/models/${m}.glb`)
+            this.loadedModels[m] = model
+        }
+
+        // assigning models
+        let currentResource = ''
+        model = null
+        this.board.tiles.forEach((el, index) => {
+            currentResource = this.board.tiles[index].resource
+            model = this.loadedModels[currentResource].clone()
             model.position.set(hexCoords[el.id].x, 0, hexCoords[el.id].z)
+            console.log(el)
             this.tiles.add(model)
         })
     }

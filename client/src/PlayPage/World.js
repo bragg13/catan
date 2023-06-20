@@ -1,10 +1,13 @@
 import * as THREE from 'three'
 import { SceneHandler } from './SceneHandler.js';
 import MouseMeshInteraction from '../helpers/MouseMeshInteraction.js'
+import { ServerHandler } from './ServerHandler.js';
 
 let mmi;
+let serverHandler;
+
 export class World {
-    constructor(canvasId) {
+    constructor(canvasId, socket) {
         // camera and renderer
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.canvas = document.getElementById(canvasId)
@@ -18,6 +21,8 @@ export class World {
         this.camera.position.set(0, 3, 2)
         this.camera.lookAt(0, 0, 0)
 
+        // server handler
+        serverHandler = new ServerHandler(socket)
     }
     
     initialize = async (server_info) => {
@@ -43,7 +48,10 @@ export class World {
         switch (e.keyCode) {
             case 37:
                 console.log('left');
-                this.spawnRandomRoad({ id: 'player_4', color: 0xff0000 })
+                serverHandler.updateServer({
+                    msg: 'spawnCity'
+                })
+                // this.spawnRandomRoad({ id: 'player_4', color: 0xff0000 })
                 break;
             case 38:
                 console.log('up');
@@ -57,6 +65,8 @@ export class World {
                 console.log('down');
                 this.spawnRandomTown({ id: 'player_0', color: 0x00ff00 })
                 break;
+            default:
+                break;
         }
     }
 
@@ -69,4 +79,4 @@ export class World {
     }
 }
 
-export { mmi }
+export { mmi, serverHandler }

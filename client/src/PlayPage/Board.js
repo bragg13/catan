@@ -18,24 +18,8 @@ export class Board {
         this.players = server_board.players
 
         // create the board
-        this.createTiles()
-        // this.createGraph()
+        // this.createTiles()
     }
-
-    // createGraph() {
-    //     this.graph = new Graph()
-
-    //     // add nodes
-    //     for (let tile = 1; tile <= 54; tile++) {
-    //         this.graph.addSpot(tile)
-
-    //         // add roads
-    //         for (let to of roadConnections[tile]) {
-    //             this.graph.addRoad(tile, to)
-    //         }
-    //     }
-    // }
-
 
     spawnTown = (spot_id, player_id) => {
         this.graph.buildSpot(spot_id, player_id)
@@ -49,19 +33,19 @@ export class Board {
 
     }
 
-    createTiles = () => {
-        let _values = values.sort(() => Math.random() - 0.5);
-        let _resourceTypes = resourceTypes.sort(() => Math.random() - 0.5);
+    // createTiles = () => {
+    //     let _values = values.sort(() => Math.random() - 0.5);
+    //     let _resourceTypes = resourceTypes.sort(() => Math.random() - 0.5);
 
-        for (let i = 0; i < _resourceTypes.length; i++) {
-            let value = (_resourceTypes[i] === "bandits") ? 7 : _values[i];
-            this.tiles.push({
-                resource: _resourceTypes[i],
-                value: value,
-                id: i + 1
-            })
-        }
-    }
+    //     for (let i = 0; i < _resourceTypes.length; i++) {
+    //         let value = (_resourceTypes[i] === "bandits") ? 7 : _values[i];
+    //         this.tiles.push({
+    //             resource: _resourceTypes[i],
+    //             value: value,
+    //             id: i + 1
+    //         })
+    //     }
+    // }
 
     getRandom = (min, max) => {
         return Math.random() * (max - min) + min;

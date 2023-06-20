@@ -10,7 +10,7 @@ export default function PlayPage({ socket }) {
 
     // component initialisation
     useEffect(() => {
-        world.current = new World('three-js-canvas')
+        world.current = new World('three-js-canvas', socket)
         const initialGameState = location.state.initialGameState
         
         const server_info = {
@@ -23,8 +23,14 @@ export default function PlayPage({ socket }) {
         world.current.animate()
     }, [])
     
-    // useEffect(() => {
-    // }, [socket]);
+    useEffect(() => {
+        socket.on('serverUpdate', (updateData) => processServerUpdate(updateData))
+    }, [socket]);
+
+
+    const processServerUpdate = (updateData) => {
+        console.log(updateData)
+    }
 
 
     return (

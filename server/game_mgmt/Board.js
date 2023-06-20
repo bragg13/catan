@@ -6,7 +6,7 @@ const resourceTypes = [
     "wood", "wood", "wood", "wood",
     "wheat", "wheat", "wheat", "wheat",
     "clay", "clay", "clay",
-    "rock", "rock", "rock", "bandits"
+    "rocks", "rocks", "rocks", "bandits"
 ]
 
 export class Board {
