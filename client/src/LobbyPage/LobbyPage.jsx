@@ -1,68 +1,67 @@
 import { useEffect, useState } from "react";
-import { Paper, Box, Typography, CircularProgress } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { Paper, Box, Typography, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function LobbyPage({ socket }) {
-    const [players, setPlayers] = useState([])
-    const [roomInfo, setRoomInfo] = useState()
-    const navigate = useNavigate()
+  const [players, setPlayers] = useState([]);
+  const [player, setPlayer] = useState(null)
+  const [roomInfo, setRoomInfo] = useState(null);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        socket.on('msg_from_server', (data) => {
-            console.log(data)
-            if (data.event === 'NEW_PLAYER') {
-                console.log('new player')
-                setPlayers(data.room.players)
-                if (roomInfo === undefined)
-                    setRoomInfo({
-                        roomId: data.room.roomId,
-                        maxPlayers: data.room.maxPlayers
-                    })
-            }
+  useEffect(() => {
+    // display lobby waiting info
+    socket.on("roomJoined", (data) => {
+      console.log(data);
+      setRoomInfo((prev) => ({
+        maxPlayers: data.roomMaxPlayers,
+        id: data.roomId,
+      }));
+      setPlayers((prev) => [...data.players]);
+    });
 
-            if (data.event === 'GAME_STARTED') {
-                console.log('game started')
-                navigate('/play')
+    // set player's info
+    socket.on("playerInfo", (data) => {
+        console.log(data);
+        setPlayer({...data})
+      });
 
-            }
-        });
+    // when the game starts
+    socket.on("gameInitialised", (data) => {
+        navigate('/play', {state: {initialGameState: data}})
+      });
+      
+  }, [socket]);
 
-    }, [socket]);
-
-
-    return (
-        <>
-            {roomInfo === undefined
-                ? (
-                    <Box alignSelf={'center'} textAlign={'center'}>
-                        <h1>Loading...</h1>
-                        <CircularProgress />
-                    </Box>
-                )
-                : (
-                    <Paper elevation={3} sx={{ margin: 'auto', marginTop: '50px', width: '50%' }}>
-                        <Typography textAlign={'center'} variant={'h5'}>
-                            ROOM-{roomInfo.roomId}
-                        </Typography>
-                        <Typography textAlign={'center'} >
-                            Waiting for {roomInfo.maxPlayers - players.length} more players to connect...
-                        </Typography>
-                        <Box>
-                            <ul>
-                                {players.map(el => {
-                                    console.log(el)
-                                    return (
-                                        <li>
-                                            <Typography>{el.username}</Typography>
-                                        </li>
-                                    )
-                                })}
-
-                            </ul>
-                        </Box>
-                    </Paper>
-                )
-            }
-        </>
-    );
+  return (
+    <>
+      {roomInfo !== null && (
+        <Paper
+          elevation={3}
+          sx={{ margin: "auto", marginTop: "50px", width: "50%" }}
+        >
+          <h1 style={{textAlign: 'center'}}>Hey! Aspetta qui! c:</h1>
+          <Typography textAlign={"center"} variant={"h5"}>
+            ROOM-{roomInfo.id}
+          </Typography>
+          <Typography textAlign={"center"}>
+            Waiting for {roomInfo.maxPlayers - players.length} more player
+            {roomInfo.maxPlayers - players.length === 1 ? "" : "s"} to
+            connect...
+          </Typography>
+          <Box>
+            <Typography>Players currently in the lobby:</Typography>
+            <ul>
+              {players.map((el) => {
+                return (
+                  <li key={crypto.randomUUID()}>
+                    <Typography fontWeight={(el.username===player.username) ? 'bold': ''} >{el.username}</Typography>
+                  </li>
+                );
+              })}
+            </ul>
+          </Box>
+        </Paper>
+      )}
+    </>
+  );
 }

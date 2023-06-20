@@ -1,5 +1,4 @@
 import { Room } from "./Room.js"
-import { Player } from "../server_mgmt/Player.js"
 const rooms = {}  // on redis later
 
 export const onConnection = socket => {
@@ -7,46 +6,40 @@ export const onConnection = socket => {
 
     socket.on('join_room', data => {
         const { username, roomId } = data
-        const player = new Player(socket.id, username, true)
+        const player = {id: socket.id, username: username}
 
-        // room exists
         if (roomId in rooms) {
-            // room is full
-            // if (rooms[roomId].isFull()) {
-            //     console.log(`room ${roomId} is full`)
-            //     socket.emit('msg_from_server', {
-            //         message: `Room ${roomId} is full`,
-            //     })
+            // join existing room
+            if (rooms[roomId].players.length < rooms[roomId].maxPlayers) {
+                rooms[roomId].joinRoom(player)
+                console.log(`Player ${player.username} joined room ${roomId}`)
+                // socket.emit('roomJoined', {roomId, player})
+            }
 
-            // } else {
-            // push player to room
-            rooms[roomId].newPlayerJoined(player, socket)
-            console.log(`player ${player.username} pushed to room ${roomId}`)
-
-            // }
         } else {
             // create new room
-            let room = new Room(roomId, 2, `ROOM-${roomId}`)
+            let room = new Room(roomId, 2)
             rooms[roomId] = room
-            rooms[roomId].newPlayerJoined(player, socket)
-            console.log(`player ${player.username} pushed to (new) room ${roomId}`)
-
+            rooms[roomId].joinRoom(player)
+            console.log(`Room ${roomId} created by ${player.username}`)
+            // socket.emit('roomCreated', {roomId})
         }
 
-        // // check if game ready
-        rooms[roomId].checkIsReady()
+        if (rooms[roomId].players.length === rooms[roomId].maxPlayers){
+            rooms[roomId].startGame()
+        }
 
     })
 
-    socket.on('disconnecting', () => {
-        // get roomId
-        const _rooms = [...socket.rooms]
-        const roomId = _rooms.filter(el => el !== socket.id)
+    // socket.on('disconnecting', () => {
+    //     // get roomId
+    //     const _rooms = [...socket.rooms]
+    //     const roomId = _rooms.filter(el => el !== socket.id)
 
-        console.log(`user disconnecting ${socket.id} from ${roomId}`)
+    //     console.log(`user disconnecting ${socket.id} from ${roomId}`)
 
-        // rooms[roomId].playerLeft(socket.id)
+    //     // rooms[roomId].playerLeft(socket.id)
 
-    })
+    // })
 
 } 

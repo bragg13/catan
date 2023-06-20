@@ -2,55 +2,42 @@ import { Game } from '../game_mgmt/Game.js'
 import { io } from '../index.js'
 
 export class Room {
-    constructor(id, maxPlayers, name) {
+    constructor(id, maxPlayers) {
         this.id = id
         this.maxPlayers = maxPlayers
-        this.name = name
 
         this.players = []
-        this.gameStatus = 'lobby' // | ready | game
+        this.gameStatus = 'lobby'
 
         this.game = null
     }
 
-    /**
-     * Adds player to the room
-     * @param {Object} player The player to be pushed
-     */
-    pushPlayer = (player) => {
+    joinRoom = (player) => {
         this.players.push(player)
+        io.sockets.sockets.get(player.id).join(this.id)
+        io.sockets.sockets.get(player.id).emit('playerInfo', {msg: 'playerInfo', ...player})
+        io.to(this.id).emit('roomJoined', {msg: 'roomJoined', roomId: this.id, roomMaxPlayers: this.maxPlayers, players: this.players})
     }
 
-    /**
-     * Checks if the numbers of players is enough to start the game
-     * @returns if the game is ready to start
-     */
-    checkIsReady = () => {
-        if (this.players.length === this.maxPlayers) {
-            this.gameStatus = 'ready'
-            this.game = new Game(this.id, this.name, this.players)
-        }
-    }
+    startGame = () => {
+        this.gameStatus = 'started'
 
-    /**
-     * Adds player to the room and emits related information events
-     * @param {Object} player The player who just joined
-     * @param {Socket} socket The socket related to the player
-     */
-    newPlayerJoined = (player, socket) => {
-        // add player to room    
-        this.pushPlayer(player)     // virtual room 
-        socket.join(this.id)        // socket room
+        this.game = new Game(this.id, this.players)
+        this.game.gameInitialise()
 
-        // let all in the lobby know
-        io.to(this.id).emit('msg_from_server', {
-            message: `${player.username} joined the room`,
-            event: 'NEW_PLAYER',
-            room: {
-                roomId: this.id,
-                maxPlayers: this.maxPlayers,
-                players: [...this.players]
-            }
+        const initialGameState = this.game.getGameState()
+
+        // emit initial game state to room
+        io.to(this.id).emit('gameInitialised', {msg: 'gameInitialised', ...initialGameState})
+
+        // subscribe to player updates
+        this.players.forEach(player => {
+            io.sockets.sockets.get(player.id)
+            .on('playerUpdate', (updateData) => this.processPlayerUpdate(updateData))
         })
+    }
+
+    processPlayerUpdate = (playerUpdate) => {
+        console.log(playerUpdate)
     }
 }

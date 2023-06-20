@@ -1,37 +1,30 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from 'three';
 import SceneInit from "./SceneInit";
 import { World } from "./World";
+import { useLocation } from "react-router-dom";
 
 export default function PlayPage({ socket }) {
-    let world;
+    const world = useRef(null);
+    const location = useLocation()
 
     // component initialisation
     useEffect(() => {
-        world = new World('three-js-canvas')
+        world.current = new World('three-js-canvas')
+        const initialGameState = location.state.initialGameState
+        
+        const server_info = {
+            server_board: initialGameState.server_board,
+            server_bg: initialGameState.server_bg,
+            server_players: initialGameState.server_players
+        }
+
+        world.current.initialize(server_info)
+        world.current.animate()
     }, [])
     
-    useEffect(() => {
-        // game initialization
-        socket.on('game_init', (data) => {
-            console.log(data);
-            const server_info = {
-                server_board: data.server_board,
-                server_bg: data.server_bg,
-                server_players: data.server_players
-            }
-            world.initialize(server_info)
-            world.animate()
-
-        });
-
-        // game updates
-        socket.on('game_update_from_server', (data) => {
-            console.log(data);
-
-        });
-
-    }, [socket]);
+    // useEffect(() => {
+    // }, [socket]);
 
 
     return (
