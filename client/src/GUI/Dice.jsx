@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Container } from "@mui/material";
 import CasinoIcon from "@mui/icons-material/Casino";
 
-export default function Dice() {
+export default function Dice({handleDiceClick}) {
   return (
     <div style={{
         display: "flex",
@@ -10,9 +10,11 @@ export default function Dice() {
         zIndex: 10,
         right: "3%",
         bottom: "3%",
-    }}>
-      <CasinoIcon sx={{fontSize: 100}}/>
-      <CasinoIcon sx={{fontSize: 100}}/>
+    }}
+    onClick={handleDiceClick}
+    >
+      <CasinoIcon sx={{fontSize: 75}}/>
+      <CasinoIcon sx={{fontSize: 75}}/>
     </div>
   );
 }
