@@ -1,14 +1,14 @@
 import React from "react";
-import { Paper, Typography, Box, Avatar, Stack } from "@mui/material";
+import { Paper, Typography, Box, Avatar, Stack, Badge, SvgIcon } from "@mui/material";
 import { PeopleOutlineRounded } from "@mui/icons-material";
-import BackpackIcon from "@mui/icons-material/Backpack";
+import { crafting, CityIcon, DevelopmentIcon, RoadIcon, TownIcon } from "../helpers/GUI_helpers";
 
-export default function Players() {
+export default function Players({players}) {
   const getPlayerUI = (player) => {
     return (
       <Stack
         padding={1}
-        borderBottom={player.username.includes("4") ? 0 : 1}
+        borderBottom={1}
         direction={"column"}
         gap={1}
         display="flex"
@@ -16,21 +16,46 @@ export default function Players() {
       >
         <Avatar
           src={<PeopleOutlineRounded />}
-          sx={{ backgroundColor: "#ff000095" }}
+          sx={{ backgroundColor: player.color }}
         />
         <Typography variant="h6">
-          Player: ID2168513215
+          {player.username}
         </Typography>
-        <Box>
-          <BackpackIcon />
-          <BackpackIcon />
-          <BackpackIcon />
-          <BackpackIcon />
-        </Box>
+        <Stack direction={'row'} gap={2}>
+            <Badge badgeContent={player.roads} color="info">
+              <SvgIcon
+                component={RoadIcon} 
+                sx={{fontSize: '4vmin'}}
+                inheritViewBox
+                />
+            </Badge>
+          <Badge badgeContent={player.towns} color="info">
+            <SvgIcon 
+              component={TownIcon} 
+              sx={{fontSize: '4vmin'}}
+              inheritViewBox
+              />
+          </Badge>
+          <Badge badgeContent={player.cities} color="info">
+            <SvgIcon 
+              component={CityIcon} 
+              sx={{fontSize: '4vmin'}}
+              inheritViewBox
+              />
+          </Badge>
+          <Badge badgeContent={player.dev} color="info">
+            <SvgIcon 
+              component={DevelopmentIcon} 
+              sx={{fontSize: '4vmin'}}
+              inheritViewBox
+              />
+          </Badge>
+        </Stack>
       </Stack>
     );
   };
 
+  if (players===undefined) return null
   return (
     <Paper
       component={Stack}
@@ -46,12 +71,7 @@ export default function Players() {
         top: "10%",
       }}
     >
-      {[
-        { username: "ciccio1" },
-        { username: "ciccio2" },
-        { username: "ciccio3" },
-        { username: "ciccio4" },
-      ].map((el) => getPlayerUI(el))}
+      {players.map((el) => getPlayerUI(el))}
     </Paper>
   );
 }

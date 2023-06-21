@@ -19,18 +19,25 @@ import {
 import BackpackIcon from "@mui/icons-material/Backpack";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import "./style.css";
-import {inventory, crafting} from "../helpers/GUI_helpers"
+import { inventory, crafting } from "../helpers/GUI_helpers";
 
-export default function MainMenu() {
+export default function MainMenu({ handleCrafting }) {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const renderCraftingItems = (items) => {
     return crafting.map((res) => (
       <Stack
-        sx={{ padding: "1vh" }}
+        sx={{
+          padding: "1vh",
+          "&:hover": {
+            cursor: "pointer",
+          },
+        }}
         gap={3}
         direction={"row"}
+        onClick={() => {
+          handleCrafting(res.name);
+        }}
       >
         <SvgIcon
           sx={{ fontSize: "5vmin" }}
@@ -46,11 +53,7 @@ export default function MainMenu() {
 
   const renderInventoryItems = (items) => {
     return inventory.map((res) => (
-      <Stack
-        sx={{ padding: "1vh" }}
-        gap={3}
-        direction={"row"}
-      >
+      <Stack sx={{ padding: "1vh" }} gap={3} direction={"row"}>
         <SvgIcon
           sx={{ fontSize: "5vmin" }}
           component={res.icon}
@@ -139,8 +142,7 @@ export default function MainMenu() {
             <DialogContent>
               {activeMenu.id === "inventory_menu"
                 ? renderInventoryItems(activeMenu.items)
-                : renderCraftingItems(activeMenu.items)
-              }
+                : renderCraftingItems(activeMenu.items)}
             </DialogContent>
           </>
         )}

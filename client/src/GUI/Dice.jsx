@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Container } from "@mui/material";
 import CasinoIcon from "@mui/icons-material/Casino";
 
 export default function Dice({handleDiceClick}) {

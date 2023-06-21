@@ -10,6 +10,7 @@ export class Game {
         for (let player of players) {
             this.players.push({     // TODO: replace with Player object
                 id: player.id,
+                color: player.color,
                 username: player.username,
                 inventory: [],
                 built: [],   // ids of things built

@@ -1,12 +1,13 @@
 import { Room } from "./Room.js"
 const rooms = {}  // on redis later
+let colors = ['#f44336', '#3f51b5', '#4CAF50', '#ff5722']
 
 export const onConnection = socket => {
     console.log(`user connected: ${socket.id}`)
 
     socket.on('join_room', data => {
         const { username, roomId } = data
-        const player = {id: socket.id, username: username}
+        const player = {id: socket.id, username: username, color: colors.pop()}
 
         if (roomId in rooms) {
             // join existing room

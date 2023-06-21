@@ -8,7 +8,7 @@ import { ReactComponent as CityIcon } from "../assets/resources_icons/city.svg"
 import { ReactComponent as RoadIcon } from "../assets/resources_icons/road.svg" 
 import { ReactComponent as DevelopmentIcon } from "../assets/resources_icons/development.svg" 
 
-export const inventory = [
+const inventory = [
   {
     name: "sheep",
     icon: SheepIcon,
@@ -31,7 +31,7 @@ export const inventory = [
   },
 ];
 
-export const crafting = [
+const crafting = [
   {
     name: "town",
     icon: TownIcon
@@ -49,3 +49,17 @@ export const crafting = [
     icon: DevelopmentIcon
   },
 ]
+
+export {
+  crafting,
+  inventory,
+  SheepIcon,
+  WoodIcon,
+  WheatIcon,
+  ClayIcon,
+  RocksIcon,
+  TownIcon,
+  CityIcon,
+  RoadIcon,
+  DevelopmentIcon
+}
