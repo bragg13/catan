@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { SceneHandler } from './SceneHandler.js';
 import MouseMeshInteraction from '../helpers/MouseMeshInteraction.js'
 import { ServerHandler } from './ServerHandler.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 let mmi;
 let serverHandler;
@@ -20,6 +21,8 @@ export class World {
         // orientate the camera
         this.camera.position.set(0, 3, 2)
         this.camera.lookAt(0, 0, 0)
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
+
 
         // server handler
         serverHandler = new ServerHandler(socket)
@@ -75,7 +78,7 @@ export class World {
         if (mmi) mmi.update()
         this.sceneHandler.update()
         this.renderer.render(this.sceneHandler.getScene(), this.camera);
-        console.log(this.sceneHandler.getScene())
+        // console.log(this.sceneHandler.getScene())
     }
 }
 

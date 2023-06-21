@@ -13,8 +13,7 @@ export default function App() {
         <Route
           path='/'
           element={
-            // <LoginPage socket={socket} />
-            <MainContainer />
+            <LoginPage socket={socket} />
           }
         />
         <Route

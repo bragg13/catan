@@ -22,28 +22,28 @@ export default function Players({players}) {
           {player.username}
         </Typography>
         <Stack direction={'row'} gap={2}>
-            <Badge badgeContent={player.roads} color="info">
+            <Badge badgeContent={player.roads.length} color="info">
               <SvgIcon
                 component={RoadIcon} 
                 sx={{fontSize: '4vmin'}}
                 inheritViewBox
                 />
             </Badge>
-          <Badge badgeContent={player.towns} color="info">
+          <Badge badgeContent={player.towns.length} color="info">
             <SvgIcon 
               component={TownIcon} 
               sx={{fontSize: '4vmin'}}
               inheritViewBox
               />
           </Badge>
-          <Badge badgeContent={player.cities} color="info">
+          <Badge badgeContent={player.cities.length} color="info">
             <SvgIcon 
               component={CityIcon} 
               sx={{fontSize: '4vmin'}}
               inheritViewBox
               />
           </Badge>
-          <Badge badgeContent={player.dev} color="info">
+          <Badge badgeContent={player.dev.length} color="info">
             <SvgIcon 
               component={DevelopmentIcon} 
               sx={{fontSize: '4vmin'}}

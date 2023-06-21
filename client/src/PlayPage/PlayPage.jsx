@@ -1,12 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from 'three';
 import SceneInit from "./SceneInit";
 import { World } from "./World";
 import { useLocation } from "react-router-dom";
+import { MainContainer } from "../GUI";
 
 export default function PlayPage({ socket }) {
     const world = useRef(null);
     const location = useLocation()
+    const [loaded, setLoaded] = useState(false)
+    const [players, setPlayers] = useState([])
 
     // component initialisation
     useEffect(() => {
@@ -18,9 +21,12 @@ export default function PlayPage({ socket }) {
             server_bg: initialGameState.server_bg,
             server_players: initialGameState.server_players
         }
-
         world.current.initialize(server_info)
         world.current.animate()
+
+        // GUI handling
+        setPlayers(initialGameState.server_players)
+        setLoaded(true)
     }, [])
     
     useEffect(() => {
@@ -32,10 +38,28 @@ export default function PlayPage({ socket }) {
         console.log(updateData)
     }
 
+    const handleCrafting = () => {
+
+    }
+
+    const handleDiceRoll = () => {
+
+    }
+
+    const handlePassTurn = () => {
+        
+    }
 
     return (
-        <div id="container">
-            <canvas id="three-js-canvas" />
-        </div>
+        <MainContainer
+            handleCrafting={handleCrafting}
+            handleDiceRoll={handleDiceRoll}
+            handlePassTurn={handlePassTurn}
+            players={players}
+        >
+            <div id="container">
+                <canvas id="three-js-canvas" />
+            </div>
+        </MainContainer>
     );
 }

@@ -13,7 +13,10 @@ export class Game {
                 color: player.color,
                 username: player.username,
                 inventory: [],
-                built: [],   // ids of things built
+                roads: [],
+                towns: [],
+                cities: [],
+                dev: [],
                 points: 0,
                 awards: [],
             })
