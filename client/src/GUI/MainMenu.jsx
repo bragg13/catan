@@ -1,14 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Button,
-  Box,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
   Paper,
   IconButton,
-  Dialog,
   DialogTitle,
   DialogContent,
   Typography,
@@ -16,10 +9,8 @@ import {
   Stack,
   Badge,
 } from "@mui/material";
-import BackpackIcon from "@mui/icons-material/Backpack";
-import ConstructionIcon from "@mui/icons-material/Construction";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import { inventory, crafting } from "../helpers/GUI_helpers";
+import { inventory, crafting, menus } from "../helpers/GUI_helpers";
+import "./GUIStyle.css";
 
 export default function MainMenu({ handleCrafting }) {
   const [activeMenu, setActiveMenu] = useState(null);
@@ -27,12 +18,7 @@ export default function MainMenu({ handleCrafting }) {
   const renderCraftingItems = (items) => {
     return crafting.map((res) => (
       <Stack
-        sx={{
-          padding: "1vh",
-          "&:hover": {
-            cursor: "pointer",
-          },
-        }}
+      className="MainMenu-item"
         gap={3}
         direction={"row"}
         onClick={() => {
@@ -40,7 +26,7 @@ export default function MainMenu({ handleCrafting }) {
         }}
       >
         <SvgIcon
-          sx={{ fontSize: "5vmin" }}
+          className="IconGUI-medium"
           component={res.icon}
           inheritViewBox
         />
@@ -53,9 +39,11 @@ export default function MainMenu({ handleCrafting }) {
 
   const renderInventoryItems = (items) => {
     return inventory.map((res) => (
-      <Stack sx={{ padding: "1vh" }} gap={3} direction={"row"}>
+      <Stack 
+      className="MainMenu-item"
+      gap={3} direction={"row"}>
         <SvgIcon
-          sx={{ fontSize: "5vmin" }}
+          className="IconGUI-medium"
           component={res.icon}
           inheritViewBox
         />
@@ -66,74 +54,10 @@ export default function MainMenu({ handleCrafting }) {
     ));
   };
 
-  const menus = [
-    {
-      id: "build_menu",
-      title: "Crafting",
-      buttonIcon: (
-        <ConstructionIcon
-          sx={{
-            fontSize: "4vmin",
-          }}
-        />
-      ),
-      color: "success",
-      disabled: false,
-      items: {
-        town: 0,
-        city: 0,
-        road: 0,
-        development: 0,
-      },
-    },
-    {
-      id: "inventory_menu",
-      title: "Inventario",
-      buttonIcon: (
-        <BackpackIcon
-          sx={{
-            fontSize: "4vmin",
-          }}
-        />
-      ),
-      color: "warning",
-      disabled: false,
-      items: {
-        sheep: 0,
-        wood: 0,
-        wheat: 0,
-        clay: 0,
-        rocks: 0,
-      },
-    },
-    {
-      id: "trade_menu",
-      title: "Scambi",
-      buttonIcon: (
-        <CurrencyExchangeIcon
-          sx={{
-            fontSize: "4vmin",
-          }}
-        />
-      ),
-      color: "error",
-      disabled: true,
-    },
-  ];
-
   return (
     <>
       <Paper
-        sx={{
-          visibility: activeMenu !== null ? "visible" : "hidden",
-          left: "3vw",
-          bottom: "15vh",
-          position: "absolute",
-          zIndex: 10,
-          height: "fitContent",
-          width: "15vw",
-          // animation: (activeMenu !== null) ? 'appear 1s' : 'appear 1s reverse'
-        }}
+        className={`MainMenu-dialog ${activeMenu !== null && "GUI-visible"}`}
       >
         {activeMenu !== null && (
           <>
@@ -150,24 +74,12 @@ export default function MainMenu({ handleCrafting }) {
 
       <Paper
         elevation={3}
-        sx={{
-          width: "15vw",
-          display: "flex",
-          position: "absolute",
-          justifyContent: "space-around",
-          zIndex: 10,
-          left: "3vw",
-          bottom: "3vh",
-        }}
+        className="MainMenu-container"
       >
         {menus.map((menu) => (
           <div key={menu.id}>
             <IconButton
-              sx={{
-                borderRadius: 2,
-                margin: 1,
-                scale: 1.5,
-              }}
+              className="MainMenu-button"
               color={menu.color}
               disabled={menu.disabled}
               onClick={(event) => {

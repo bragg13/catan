@@ -10,6 +10,7 @@ export default function PlayPage({ socket }) {
     const location = useLocation()
     const [loaded, setLoaded] = useState(false)
     const [players, setPlayers] = useState([])
+    const [currentPlayer, setCurrentPlayer] = useState(null)
 
     // component initialisation
     useEffect(() => {
@@ -26,6 +27,7 @@ export default function PlayPage({ socket }) {
 
         // GUI handling
         setPlayers(initialGameState.server_players)
+        setCurrentPlayer(initialGameState.server_players.filter(el => el.id === socket.id)[0])
         setLoaded(true)
     }, [])
     
@@ -56,6 +58,7 @@ export default function PlayPage({ socket }) {
             handleDiceRoll={handleDiceRoll}
             handlePassTurn={handlePassTurn}
             players={players}
+            currentPlayer={currentPlayer}
         >
             <div id="container">
                 <canvas id="three-js-canvas" />

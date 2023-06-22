@@ -1,19 +1,15 @@
 import React from "react";
 import CasinoIcon from "@mui/icons-material/Casino";
+import './GUIStyle.css'
 
-export default function Dice({handleDiceRoll}) {
+export default function Dice({handleDiceRoll, isEnabled}) {
   return (
-    <div style={{
-        display: "flex",
-        position: "absolute",
-        zIndex: 10,
-        right: "3%",
-        bottom: "3%",
-    }}
-    onClick={handleDiceRoll}
+    <div className={`Dice-div ${isEnabled && ".GUI-disabled"}`}
+    onClick={isEnabled ? handleDiceRoll : ''}
+    
     >
-      <CasinoIcon sx={{fontSize: 75}}/>
-      <CasinoIcon sx={{fontSize: 75}}/>
+      <CasinoIcon className="IconGUI-big" />
+      <CasinoIcon className="IconGUI-big" />
     </div>
   );
 }

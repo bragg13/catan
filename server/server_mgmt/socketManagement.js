@@ -7,7 +7,11 @@ export const onConnection = socket => {
 
     socket.on('join_room', data => {
         const { username, roomId } = data
-        const player = {id: socket.id, username: username, color: colors.pop()}
+        const player = {
+            id: socket.id, 
+            username: username, 
+            color: colors.pop()
+        }
 
         if (roomId in rooms) {
             // join existing room

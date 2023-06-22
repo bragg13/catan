@@ -7,6 +7,9 @@ import { ReactComponent as TownIcon } from "../assets/resources_icons/town.svg"
 import { ReactComponent as CityIcon } from "../assets/resources_icons/city.svg" 
 import { ReactComponent as RoadIcon } from "../assets/resources_icons/road.svg" 
 import { ReactComponent as DevelopmentIcon } from "../assets/resources_icons/development.svg" 
+import BackpackIcon from "@mui/icons-material/Backpack";
+import ConstructionIcon from "@mui/icons-material/Construction";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 
 const inventory = [
   {
@@ -50,9 +53,65 @@ const crafting = [
   },
 ]
 
+const menus = [
+  {
+    id: "build_menu",
+    title: "Crafting",
+    buttonIcon: (
+      <ConstructionIcon
+        sx={{
+          fontSize: "4vmin",
+        }}
+      />
+    ),
+    color: "success",
+    disabled: false,
+    items: {
+      town: 0,
+      city: 0,
+      road: 0,
+      development: 0,
+    },
+  },
+  {
+    id: "inventory_menu",
+    title: "Inventario",
+    buttonIcon: (
+      <BackpackIcon
+        sx={{
+          fontSize: "4vmin",
+        }}
+      />
+    ),
+    color: "warning",
+    disabled: false,
+    items: {
+      sheep: 0,
+      wood: 0,
+      wheat: 0,
+      clay: 0,
+      rocks: 0,
+    },
+  },
+  {
+    id: "trade_menu",
+    title: "Scambi",
+    buttonIcon: (
+      <CurrencyExchangeIcon
+        sx={{
+          fontSize: "4vmin",
+        }}
+      />
+    ),
+    color: "error",
+    disabled: true,
+  },
+]
+
 export {
   crafting,
   inventory,
+  menus,
   SheepIcon,
   WoodIcon,
   WheatIcon,

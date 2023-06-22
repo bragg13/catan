@@ -1,0 +1,99 @@
+/* === ANIMATIONS === */
+@keyframes appear {
+    from {
+        transform: translate(-50px, 0);
+    }
+    to {
+        transform: translate(0, 0);
+    }
+}
+
+/* === ICONS === */
+.IconGUI-big {
+    font-size: 6vmin !important
+}
+.IconGUI-medium {
+    font-size: 5vmin !important
+}
+.IconGUI-small {
+    font-size: 4vmin !important
+}
+
+/* === PASS TURN === */
+.PassTurn-div {
+    display: flex;
+    position: absolute;
+    z-index: 10;
+    right: 3%;
+    bottom: 12%;
+}
+
+/* === DICE === */
+.Dice-div {
+    display: flex;
+    position: absolute;
+    z-index: 10;
+    right: 3%;
+    bottom: 3%;
+}
+
+/* === PLAYERS === */
+.Players-container {
+    padding: 1vmin;
+    width: fit-content;
+    display: flex;
+    position: absolute;
+    z-index: 10;
+    right: 3%;
+    top: 10%;
+}
+
+.Players-player {
+    padding: 1vmin;
+    display: flex;
+    align-items: center;
+}
+
+/* === MAIN MENU === */
+.MainMenu-dialog {
+    left: 3vw;
+    bottom: 15vh;
+    position: absolute;
+    z-index: 10;
+    height: fit-content;
+    width: 15vw;
+}
+
+.MainMenu-container {
+    width: 15vw;
+    display: flex;
+    position: absolute;
+    justify-content: space-around;
+    z-index: 10;
+    left: 3vw;
+    bottom: 3vh;
+    padding: 1vmin;
+}
+
+.MainMenu-button {
+    border-radius: 2;
+    margin: 1;
+    scale: 1.5;
+}
+
+.MainMenu-item {
+    padding: 1vh
+}
+
+/* === MISC === */
+.PassTurn-div:hover .Dice-div:hover MainMenu-crafting-item:hover{
+    cursor: pointer;
+}
+
+.GUI-disabled {
+    opacity: 0.8
+}
+
+.GUI-visible {
+    visibility: visible;
+}

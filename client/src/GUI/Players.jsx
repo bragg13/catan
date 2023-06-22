@@ -2,51 +2,49 @@ import React from "react";
 import { Paper, Typography, Box, Avatar, Stack, Badge, SvgIcon } from "@mui/material";
 import { PeopleOutlineRounded } from "@mui/icons-material";
 import { crafting, CityIcon, DevelopmentIcon, RoadIcon, TownIcon } from "../helpers/GUI_helpers";
+import './GUIStyle.css'
 
-export default function Players({players}) {
+export default function Players({players, currentPlayer}) {
   const getPlayerUI = (player) => {
     return (
       <Stack
-        padding={1}
-        borderBottom={1}
+        className="Players-player"
         direction={"column"}
         gap={1}
-        display="flex"
-        alignItems="center"
       >
         <Avatar
           src={<PeopleOutlineRounded />}
           sx={{ backgroundColor: player.color }}
         />
-        <Typography variant="h6">
-          {player.username}
+        <Typography fontWeight={(player.id === currentPlayer.id) ? 'bold' : ''} variant="h6">
+          {player.username} {player.isTurn ? '(playing)' : ''}
         </Typography>
         <Stack direction={'row'} gap={2}>
             <Badge badgeContent={player.roads.length} color="info">
               <SvgIcon
                 component={RoadIcon} 
-                sx={{fontSize: '4vmin'}}
+                className="IconGUI-small"
                 inheritViewBox
                 />
             </Badge>
           <Badge badgeContent={player.towns.length} color="info">
             <SvgIcon 
               component={TownIcon} 
-              sx={{fontSize: '4vmin'}}
+              className="IconGUI-small"
               inheritViewBox
               />
           </Badge>
           <Badge badgeContent={player.cities.length} color="info">
             <SvgIcon 
               component={CityIcon} 
-              sx={{fontSize: '4vmin'}}
+              className="IconGUI-small"
               inheritViewBox
               />
           </Badge>
           <Badge badgeContent={player.dev.length} color="info">
             <SvgIcon 
               component={DevelopmentIcon} 
-              sx={{fontSize: '4vmin'}}
+              className="IconGUI-small"
               inheritViewBox
               />
           </Badge>
@@ -60,18 +58,15 @@ export default function Players({players}) {
     <Paper
       component={Stack}
       direction={"column"}
+      gap={2}
       elevation={3}
-      sx={{
-        padding: 1,
-        width: "fit-content",
-        display: "flex",
-        position: "absolute",
-        zIndex: 10,
-        right: "3%",
-        top: "10%",
-      }}
+      className="Players-container"
     >
-      {players.map((el) => getPlayerUI(el))}
+      {players.map((el) => 
+        <Paper>
+        {getPlayerUI(el)}
+        </Paper>
+        )}
     </Paper>
   );
 }

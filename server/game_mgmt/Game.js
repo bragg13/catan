@@ -1,5 +1,3 @@
-import { Socket } from "socket.io"
-import { io } from "../index.js"
 import { Board } from "./Board.js"
 
 export class Game {
@@ -19,6 +17,7 @@ export class Game {
                 dev: [],
                 points: 0,
                 awards: [],
+                isTurn: false
             })
         }
     }
