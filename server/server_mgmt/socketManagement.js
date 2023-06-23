@@ -31,7 +31,7 @@ export const onConnection = socket => {
         }
 
         if (rooms[roomId].players.length === rooms[roomId].maxPlayers){
-            rooms[roomId].startGame()
+            rooms[roomId].createGame()
         }
 
     })

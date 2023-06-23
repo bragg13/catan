@@ -11,7 +11,6 @@ export default function LobbyPage({ socket }) {
   useEffect(() => {
     // display lobby waiting info
     socket.on("roomJoined", (data) => {
-      console.log(data);
       setRoomInfo((prev) => ({
         maxPlayers: data.roomMaxPlayers,
         id: data.roomId,
@@ -21,7 +20,6 @@ export default function LobbyPage({ socket }) {
 
     // set player's info
     socket.on("playerInfo", (data) => {
-        console.log(data);
         setPlayer({...data})
       });
 

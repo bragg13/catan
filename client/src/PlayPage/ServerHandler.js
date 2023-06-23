@@ -6,4 +6,5 @@ export class ServerHandler {
     updateServer = (updateData) => {
         this.socket.emit('playerUpdate', {from: this.socket.id, ...updateData})
     }
+
 }

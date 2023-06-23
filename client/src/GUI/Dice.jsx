@@ -5,7 +5,7 @@ import './GUIStyle.css'
 export default function Dice({handleDiceRoll, isEnabled}) {
   return (
     <div className={`Dice-div ${isEnabled && ".GUI-disabled"}`}
-    onClick={isEnabled ? handleDiceRoll : ''}
+    onClick={isEnabled ? handleDiceRoll : null}
     
     >
       <CasinoIcon className="IconGUI-big" />

@@ -16,25 +16,26 @@ export class Game {
                 cities: [],
                 dev: [],
                 points: 0,
-                awards: [],
-                isTurn: false
+                awards: []
             })
         }
     }
     
     gameInitialise = () => {
-        this.turn = 0
-        this.background = 'skyblue'
+        this.turn = {
+            round: 0,
+            player: null
+        }
         
         this.board = new Board(this.players)
-        
+        console.log(this.turn)
         console.log('game created')
     }
 
     getGameState = () => {
         return {
             server_board: this.board,
-            server_bg: this.background,
+            server_turn: this.turn,
             server_players: this.players        // TODO: might be redundant
         }
     }

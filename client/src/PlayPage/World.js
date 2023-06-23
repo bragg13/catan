@@ -23,14 +23,14 @@ export class World {
         this.camera.lookAt(0, 0, 0)
         const controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-
         // server handler
         serverHandler = new ServerHandler(socket)
     }
     
-    initialize = async (server_info) => {
-        this.sceneHandler = new SceneHandler(server_info)
+    initialize = async (serverData) => {
+        this.sceneHandler = new SceneHandler(serverData)
         await this.sceneHandler.init()
+        serverHandler.updateServer({msg: 'clientReady'})
         
         // keyboard listener
         document.addEventListener('keydown', this.handleKeyboard)
@@ -38,6 +38,33 @@ export class World {
         document.body.appendChild(this.renderer.domElement);
     }
 
+    initialTurn = () => {
+      // mostro spot available per una town
+      // seleziono town
+      // aggiorno il server
+      // mostro spot available per una road
+      // seleziono road
+      // agiorno il server
+      // passo il turno
+
+    }
+    
+    updateScene = (serverData) => {
+        console.log(serverData)
+    }
+
+    handleCrafting = () => {
+
+    }
+    
+    handleDiceRoll = () => {
+
+    }
+    
+    handlePassTurn = () => {
+
+    }
+    
 
     // spawnRandomTown = (player) => {
     //     let spot_id = Math.floor(Math.random() * 53)

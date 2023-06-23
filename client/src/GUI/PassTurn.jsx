@@ -6,7 +6,7 @@ export default function PassTurn({ handlePassTurn, isEnabled }) {
   return (
     <div
       className={`PassTurn-div ${isEnabled && ".GUI-disabled"}`}
-      onClick={isEnabled ? handlePassTurn : ""}
+      onClick={isEnabled ? handlePassTurn : null}
     >
       <SkipNextIcon className="IconGUI-big" />
     </div>

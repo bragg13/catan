@@ -3,10 +3,9 @@ import { roadConnections } from "./helpers/coords.js"
 import {resourceTypes, values} from './helpers/constants.js'
 
 export class Board {
-    constructor(players) {
+    constructor() {
         this.tiles = []
         this.graph = null
-        this.players = players
 
         // create the board
         this.createTiles()

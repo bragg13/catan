@@ -8,11 +8,10 @@ export class SceneHandler {
     constructor(server_info) {
         // const server_board, server_bg, server_players} = 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(server_info['server_bg'])
+        this.scene.background = new THREE.Color('skyblue')
 
         this.board = new Board(server_info['server_board'])
-        this.turn = null
-        this.round = 0
+        this.turn = server_info['server_turn']
 
         // stuff to be on screen - create
         this.loadedModels = {}
@@ -32,7 +31,6 @@ export class SceneHandler {
     init = async () => {
         await this.spawnTiles()
         this.scene.add(this.tiles)
-        console.log(this.scene.children)
     }
 
     update = () => {
@@ -46,10 +44,6 @@ export class SceneHandler {
         // update animations
         if (this.mixer)
             this.mixer.update(delta)
-    }
-
-    nextTurn = () => {
-        this.round += 1
     }
 
     /**
@@ -84,7 +78,6 @@ export class SceneHandler {
             currentResource = this.board.tiles[index].resource
             model = this.loadedModels[currentResource].clone()
             model.position.set(hexCoords[el.id].x, 0, hexCoords[el.id].z)
-            console.log(el)
             this.tiles.add(model)
         })
     }

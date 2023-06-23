@@ -16,8 +16,8 @@ export default function Players({players, currentPlayer}) {
           src={<PeopleOutlineRounded />}
           sx={{ backgroundColor: player.color }}
         />
-        <Typography fontWeight={(player.id === currentPlayer.id) ? 'bold' : ''} variant="h6">
-          {player.username} {player.isTurn ? '(playing)' : ''}
+        <Typography variant="h6">
+          {player.username}
         </Typography>
         <Stack direction={'row'} gap={2}>
             <Badge badgeContent={player.roads.length} color="info">

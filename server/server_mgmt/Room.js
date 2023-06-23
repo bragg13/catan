@@ -7,6 +7,7 @@ export class Room {
         this.maxPlayers = maxPlayers
 
         this.players = []
+        this.playersReady = []
         this.gameStatus = 'lobby'
 
         this.game = null
@@ -19,8 +20,8 @@ export class Room {
         io.to(this.id).emit('roomJoined', {msg: 'roomJoined', roomId: this.id, roomMaxPlayers: this.maxPlayers, players: this.players})
     }
 
-    startGame = () => {
-        this.gameStatus = 'started'
+    createGame = () => {
+        this.gameStatus = 'created'
 
         this.game = new Game(this.id, this.players)
         this.game.gameInitialise()
@@ -39,5 +40,43 @@ export class Room {
 
     processPlayerUpdate = (playerUpdate) => {
         console.log(playerUpdate)
+        switch(playerUpdate.msg) {
+            case 'clientReady':
+                this.handleClientReady(playerUpdate)
+                break;
+            
+            case 'initialTurn':
+                this.nextInitialTurn(playerUpdate)
+                break;
+            
+            default:
+                break;
+        }
+    }
+
+    handleClientReady = (playerId) => {
+        this.playersReady.push(playerId)
+        if (this.playersReady.length === this.players.length) {
+            this.gameStatus = 'started'
+            this.startGame()
+        }
+    }
+
+    nextInitialTurn = () => {
+        
+    }
+
+    startGame = () => {
+        let data = {}
+        
+        // turn
+        this.game.turn.player = this.players[0].id
+        data.player = this.game.turn.player
+
+        // available spots
+
+        // available roads
+
+        io.to(this.id).emit('initialTurn', data)
     }
 }

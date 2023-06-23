@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box } from "@mui/material";
-import { Dice, MainMenu, Players, PassTurn} from ".";
+import { Dice, MainMenu, Players, PassTurn } from ".";
 
 export default function MainContainer({
   handleCrafting,
@@ -8,17 +8,22 @@ export default function MainContainer({
   handlePassTurn,
   players,
   currentPlayer,
-  children,
+  turn,
 }) {
   return (
     <>
       <Box height="100%" width="100%">
-        <MainMenu handleCrafting={handleCrafting}/>
-        <Players players={players} currentPlayer={currentPlayer}/>
-        <Dice handleDiceRoll={handleDiceRoll} isEnabled={currentPlayer===null ? false : currentPlayer.isTurn}/>
-        <PassTurn handlePassTurn={handlePassTurn} isEnabled={currentPlayer===null ? false : currentPlayer.isTurn}/>
+        <MainMenu handleCrafting={handleCrafting} />
+        <Players players={players} currentPlayer={currentPlayer} />
+        <Dice
+          handleDiceRoll={handleDiceRoll}
+          isEnabled={turn===null ? false : (turn.player === currentPlayer.id)}
+        />
+        <PassTurn
+          handlePassTurn={handlePassTurn}
+          isEnabled={turn===null ? false : (turn.player === currentPlayer.id)}
+        />
       </Box>
-      {children}
     </>
   );
 }
