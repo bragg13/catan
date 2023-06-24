@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 import { World } from "./World";
 import { useLocation } from "react-router-dom";
 import { MainContainer } from "../GUI";
@@ -36,37 +35,49 @@ export default function PlayPage({ socket }) {
 
   useEffect(() => {
     if (loaded) {
-      socket.on("serverUpdate", (updateData) => processServerUpdate(updateData));
-      socket.on("initialTurn", (updateData) => processInitialTurn(updateData));
-      // socket.on('chat', (updateData) => processServerUpdate(updateData)) // TBI: CHAT
+      socket.on("serverUpdate", (updateData) =>
+        processServerUpdate(updateData)
+      );
+      socket.on("earlyGameUpdate", (updateData) =>
+        processEarlyGameUpdate(updateData)
+      );
     }
   }, [socket, loaded]);
 
-  const processInitialTurn = (serverData) => {
-    setTurn(serverData.player)
+  const processEarlyGameUpdate = (serverData) => {
+    console.log(serverData);
+    
+    // who is playing this turn
+    setTurn(serverData.turnPlayer);
 
-    if (serverData.player === currentPlayer.id) {
-      console.log('my turn!')
-  
-      // in initialTurn ci metto anche le available spots di questo player
+    if (serverData.turnPlayer === currentPlayer.id) {
+      console.log("my turn!");
+
       // propagate to world
-      world.current.initialTurn(serverData)
+      world.current.earlyGame(
+        serverData.turnPlayer, // send also color?
+        serverData.availableSpots,
+        serverData.availableRoads
+      );
 
       // propagate to GUI
       // ?
-      
     } else {
-      console.log('not my turn')
+      console.log("not my turn");
     }
-  }
+  };
 
   const processServerUpdate = (updateData) => {
     console.log(updateData);
+
     const data = {
+      // scomporre questo oggetto è inutile?
       server_board: updateData.server_board,
       server_turn: updateData.server_turn,
       server_players: updateData.server_players,
     };
+
+    // mid game
     world.current.updateScene(data);
   };
 
@@ -84,7 +95,7 @@ export default function PlayPage({ socket }) {
 
   return (
     <div id="container">
-        <canvas id="three-js-canvas" />
+      <canvas id="three-js-canvas" />
       <MainContainer
         handleCrafting={handleCrafting}
         handleDiceRoll={handleDiceRoll}

@@ -42,13 +42,24 @@ export class Room {
         console.log(playerUpdate)
         switch(playerUpdate.msg) {
             case 'clientReady':
+                console.log('[SERVER] Room - client ready');
                 this.handleClientReady(playerUpdate)
                 break;
-            
-            case 'initialTurn':
-                this.nextInitialTurn(playerUpdate)
+
+            case 'selectedTown':
+                console.log(`[SERVER] Room - Player ${playerUpdate.from} has selected a town`)    
+                this.game.selectedTown(playerUpdate.from, playerUpdate.selectedTown)
                 break;
             
+            case 'selectedTown':
+                console.log(`[SERVER] Room - Player ${playerUpdate.from} has selected a road`)    
+                this.game.selectedRoad(playerUpdate.from, playerUpdate.selectedRoad)
+                break;
+
+            case 'turnDone':
+                console.log('[SERVER] Room - turn done');
+                break;
+
             default:
                 break;
         }
@@ -58,25 +69,15 @@ export class Room {
         this.playersReady.push(playerId)
         if (this.playersReady.length === this.players.length) {
             this.gameStatus = 'started'
-            this.startGame()
+            console.log('[SERVER] Room - sending early game update')
+
+            let data = {
+                turnPlayer: this.game.turnSystem.player,
+                availableSpots: this.game.getAvailableSpots(this.game.turnSystem.player),
+                availableRoads: null
+            }
+
+            io.to(this.id).emit('earlyGameUpdate', data)
         }
-    }
-
-    nextInitialTurn = () => {
-        
-    }
-
-    startGame = () => {
-        let data = {}
-        
-        // turn
-        this.game.turn.player = this.players[0].id
-        data.player = this.game.turn.player
-
-        // available spots
-
-        // available roads
-
-        io.to(this.id).emit('initialTurn', data)
     }
 }

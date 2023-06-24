@@ -55,6 +55,10 @@ export class Board {
         }
     }
 
+    showAvailableSpots = (player_id) => {
+        return this.graph.showAvailableSpots(player_id)
+    }
+
     spawnTown = (spot_id, player_id) => {
         this.graph.buildSpot(spot_id, player_id)
     }

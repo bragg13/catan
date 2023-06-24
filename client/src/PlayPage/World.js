@@ -38,15 +38,36 @@ export class World {
         document.body.appendChild(this.renderer.domElement);
     }
 
-    initialTurn = () => {
-      // mostro spot available per una town
-      // seleziono town
-      // aggiorno il server
-      // mostro spot available per una road
-      // seleziono road
-      // agiorno il server
-      // passo il turno
+    earlyGame = (playerId, availableSpots, availableRoads) => {
+        if (availableSpots!== null) {
+            let selectedTown = null
+            console.log('seleziona un posto dove costruire una TOWN')
+            
+            // mostro spot available per una town
+            this.sceneHandler.showAvailableSpots(availableSpots, (selectedSpotId) => {
+                console.log('selezionato', selectedSpotId)
 
+                // remove all availableSpawnPoint meshes
+                
+                // set selected spot
+                this.sceneHandler.spawnTown(selectedSpotId, playerId)
+                
+                // aggiorno il server
+                // serverHandler.updateServer({msg: 'selectedTown', selectedTown})
+            })
+            
+            
+        } else if (availableRoads !== null) {
+            let selectedRoad = null
+            console.log('seleziona un posto dove costruire una ROAD')
+            // mostro spot available per una road
+
+            // seleziono road
+        
+            // aggiorno il server
+            // serverHandler.updateServer({msg: 'selectedRoad', selectedRoad})
+            
+        }
     }
     
     updateScene = (serverData) => {

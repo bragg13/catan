@@ -19,6 +19,7 @@ export class Graph {
 
         // set adjacents to unbuildable
         const adjs = this.roads[spot_id]
+        console.log(adjs)
         for (let adj of Object.keys(adjs)) {
             this.spots[adj] = 'not_buildable'
         }
@@ -46,6 +47,7 @@ export class Graph {
             if (built_by === player_id) playerTowns.push(spot_id)
         }
 
+
         // if no town or just one is built, (almost) all are available (1st/2nd round)
         if (playerTowns.length <= 1) {
             let buildable = []
@@ -54,7 +56,6 @@ export class Graph {
             }
             return buildable
         }
-
 
         let availableSpots = []
         for (let town of playerTowns) {
@@ -82,6 +83,8 @@ export class Graph {
                 }
             }
         }
+        console.log('LMAO')
+        console.log(availableSpots)
         return availableSpots
     }
 

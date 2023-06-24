@@ -24,7 +24,7 @@ export class SceneHandler {
         this.sun.position.set(-5, 10, 0)
         this.scene.add(this.sun)
 
-        this.mixer = null
+        this.mixers = []
         this.clock = new THREE.Clock()
     }
 
@@ -42,8 +42,11 @@ export class SceneHandler {
 
 
         // update animations
-        if (this.mixer)
-            this.mixer.update(delta)
+        if (this.mixer!==undefined){
+            for (let mixer of this.mixers) {
+                mixer.update(delta)
+            }
+        }
     }
 
     /**
@@ -52,11 +55,6 @@ export class SceneHandler {
      */
     getScene = () => {
         return this.scene
-    }
-
-    enterConstructionMode = () => {
-        this.mode = 'construction'
-
     }
 
     /**
@@ -122,9 +120,8 @@ export class SceneHandler {
     }
 
 
-    spawnPlaceableTown = (spot_id) => {
+    spawnPlaceableTown = (spot_id, callbackOnSelection) => {
         // create the spheres
-        let availableSpots = this.board.showSelectableSpots()
         let objGeo = new THREE.SphereGeometry(0.1)
         let objMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4 })
         let coords = spotCoords[spot_id]
@@ -134,22 +131,31 @@ export class SceneHandler {
         this.scene.add(sphere)
 
         // add event listener
-        mmi.addHandler('placeable_town', 'click', mesh => {
-            console.log('clicke!')
-            this.scene.remove(mesh)
-        })
+        mmi.addHandler('placeable_town', 'click', callbackOnSelection)
+            // callbackOnSelection(spot_id)
+            // this.scene.getObjectsByProperty('name', 'placeable_town').forEach((el, index) => {
+            //     this.scene.remove(el)
+            // })
+        // })
 
         // add animations
         const scaleKF = new THREE.VectorKeyframeTrack('.scale', [0, 1, 2], [1, 1, 1, 2, 2, 2, 1, 1, 1])
         const opacityKF = new THREE.VectorKeyframeTrack('.material.opacity', [0, 1, 2], [0.4, 0.8, 0.4])
 
         const clip = new THREE.AnimationClip('Action', 2, [scaleKF, opacityKF]);
-        this.mixer = new THREE.AnimationMixer(sphere)
-
-        const clipAction = this.mixer.clipAction(clip);
+        let mixer = new THREE.AnimationMixer(sphere)
+        const clipAction = mixer.clipAction(clip);
         clipAction.setLoop(THREE.LoopRepeat, 10)
         clipAction.play();
-
+        
+        this.mixers.push(mixer)
     }
+
+    showAvailableSpots = (spots, callbackOnSelection) => {
+        for (let spot of spots) {
+            this.spawnPlaceableTown(spot, callbackOnSelection)
+        }
+    }
+
 
 }
