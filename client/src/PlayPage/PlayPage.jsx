@@ -23,7 +23,6 @@ export default function PlayPage({ socket }) {
     };
 
     world.current.initialize(server_info);
-    world.current.animate();
 
     // GUI handling
     setPlayers(initialGameState.server_players);
@@ -55,7 +54,10 @@ export default function PlayPage({ socket }) {
 
       // propagate to world
       world.current.earlyGame(
-        serverData.turnPlayer, // send also color?
+        {
+          id: currentPlayer.id,
+          color: currentPlayer.color
+        }, 
         serverData.availableSpots,
         serverData.availableRoads
       );

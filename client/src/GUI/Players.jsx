@@ -63,7 +63,7 @@ export default function Players({players, currentPlayer}) {
       className="Players-container"
     >
       {players.map((el) => 
-        <Paper>
+        <Paper key={crypto.randomUUID()}>
         {getPlayerUI(el)}
         </Paper>
         )}
