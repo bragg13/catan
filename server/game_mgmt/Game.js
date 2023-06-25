@@ -25,6 +25,7 @@ export class Game {
     gameInitialise = () => {
         this.turnSystem = new TurnSystem(this.players)
         this.board = new Board(this.players)
+        console.log(this.players)
         console.log('game created')
     }
 
@@ -39,16 +40,16 @@ export class Game {
 
     // interaction with board
     getAvailableSpots = (player_id) => {
-        return this.board.showAvailableSpots(player_id)
+        return this.board.getAvailableSpots(player_id)
     }
-    getAvailableRoads = (player_id) => {this.board.graph.showAvailableRoads(player_id)}
+    getAvailableRoads = (player_id) => {
+        return this.board.getAvailableRoads(player_id)
+    }
 
-    selectedTown = (player, town) => {
+    selectedTown = (town, player) => {
         this.board.spawnTown(town, player)
-        this.turnSystem.nextInitialTurn()
     }
-    selectedRoad = (player, road) => {
-        this.board.spawnRoad(road, player)
-        this.turnSystem.nextInitialTurn()
+    selectedRoad = (road, player) => {
+        this.board.spawnRoad(road.from, road.to, player)
     }
 }

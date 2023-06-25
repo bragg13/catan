@@ -10,8 +10,8 @@ export class Graph {
     }
 
     // for the way I created the coordinates, need just this
-    addRoad = (from, to) => {
-        this.roads[from][to] = null
+    addRoad = (from, to, road_id) => {
+        this.roads[from][to] = {player: null, id: road_id}
     }
 
     buildSpot = (spot_id, player_id) => {
@@ -19,28 +19,29 @@ export class Graph {
 
         // set adjacents to unbuildable
         const adjs = this.roads[spot_id]
-        console.log(adjs)
         for (let adj of Object.keys(adjs)) {
             this.spots[adj] = 'not_buildable'
         }
     }
 
     buildRoad = (from, to, player_id) => {
-        this.roads[from][to] = player_id
-        this.roads[to][from] = player_id
+        this.roads[from][to].player = player_id
+        this.roads[to][from].player = player_id
     }
 
     print = () => {
+        let road;
         for (let node of Object.keys(this.roads)) {
             console.log(`Node: ${node} (built by ${this.spots[node]})`)
             for (let to of Object.keys(this.roads[node])) {
-                console.log(`...has road to ${to} (built by ${this.roads[node][to]})`)
+                road = this.roads[node][to]
+                console.log(`...has road to ${to} (built by ${road.player}, ID:${road.id})`)
             }
         }
     }
 
     // basically perform a BFS starting from built towns/cities
-    showAvailableSpots = (player_id) => {
+    getAvailableSpots = (player_id) => {
         // retrieve ids of towns built by player
         let playerTowns = []
         for (const [spot_id, built_by] of Object.entries(this.spots)) {
@@ -75,7 +76,7 @@ export class Graph {
                 for (let adj of Object.keys(this.roads[t])) {
                     if (!explored[adj]) {
                         // se la strada è mia -> queue
-                        if (this.roads[t][adj] === player_id) {
+                        if (this.roads[t][adj].player === player_id) {
                             queue.push(adj)
                         }
 
@@ -83,13 +84,11 @@ export class Graph {
                 }
             }
         }
-        console.log('LMAO')
-        console.log(availableSpots)
         return availableSpots
     }
 
 
-    showAvailableRoads = (player_id) => {
+    getAvailableRoads = (player_id) => {
         // list all the spots I could build a road from
         let playerTowns = []
         for (const [spot_id, built_by] of Object.entries(this.spots)) {
@@ -111,12 +110,12 @@ export class Graph {
                 for (let adj of Object.keys(this.roads[t])) {
                     if (!explored[adj]) {
                         // se la strada è libera -> available
-                        if (this.roads[t][adj] === null) {
-                            availableRoads.push([t, adj])
+                        if (this.roads[t][adj].player === null) {
+                            availableRoads.push({from: t, to: adj, id: this.roads[t][adj].id})
                         }
 
                         // se la strada è mia -> queue
-                        if (this.roads[t][adj] === player_id) {
+                        if (this.roads[t][adj].player === player_id) {
                             queue.push(adj)
                         }
 
@@ -124,6 +123,7 @@ export class Graph {
                 }
             }
         }
+        console.log(availableRoads)
         return availableRoads
     }
 }

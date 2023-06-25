@@ -22,30 +22,18 @@ export class SceneHandler {
 
     this.sun = new THREE.DirectionalLight(0xffffff, 2);
     this.sun.position.set(-5, 10, 0);
+    this.sun.tick = (delta) => {
+      if (this.sun.position.x >= 5) this.sun.position.x = -5;
+      this.sun.position.x += 0.01*delta;
+    }
     this.scene.add(this.sun);
 
-    this.mixers = [];
-    this.clock = new THREE.Clock();
+    this.updatables = []
   }
 
   init = async () => {
     await this.spawnTiles();
     this.scene.add(this.tiles);
-  };
-
-  update = () => {
-    const delta = this.clock.getDelta();
-
-    // update sun movement
-    this.sun.position.x += 0.01;
-    if (this.sun.position.x >= 5) this.sun.position.x = -5;
-
-    // update animations
-    if (this.mixer !== undefined) {
-      for (let mixer of this.mixers) {
-        mixer.update(delta);
-      }
-    }
   };
 
   /**
@@ -103,18 +91,18 @@ export class SceneHandler {
    * @param {Number} to Road destination spot
    * @param {Object} player
    */
-  spawnRoad = (from, to, player) => {
+  spawnRoad = (road_id, player) => {
     let objGeo = new THREE.BoxGeometry(1, 1, 1);
     let objMat = new THREE.MeshPhongMaterial({ color: player.color });
-    let coords = roadCoords[from];
+    let coords = roadCoords[road_id];
     let road = new THREE.Mesh(objGeo, objMat);
 
     road.position.set(coords.x, coords.y, coords.z);
     road.rotation.set(0, coords.yangle, 0);
     road.scale.set(0.12, 0.18, 0.65);
-    road.name = `road_${from}_${to}_${player.id}`;
+    road.name = `road_${road_id}_${player.id}`;
 
-    this.board.spawnRoad(from, to, player.id);
+    // this.board.spawnRoad(from, to, player.id);
     this.scene.add(road);
   };
 
@@ -132,8 +120,10 @@ export class SceneHandler {
     town.position.set(coords.x, coords.y, coords.z);
     town.name = "placeable_town";
     town.userData.spot_id = spot_id;
-    this.scene.add(town);
 
+    
+    this.scene.add(town);
+    
     // add event listener
     mmi.addHandler("placeable_town", "click", callbackOnSelection);
 
@@ -141,61 +131,68 @@ export class SceneHandler {
     const scaleKF = new THREE.VectorKeyframeTrack(
       ".scale",
       [0, 1, 2],
-      [1, 1, 1, 2, 2, 2, 1, 1, 1]
-    );
-    const opacityKF = new THREE.VectorKeyframeTrack(
-      ".material.opacity",
+      [1, 1, 1, 1.1, 1.1, 1.1, 1, 1, 1]
+      );
+      const opacityKF = new THREE.VectorKeyframeTrack(
+        ".material.opacity",
       [0, 1, 2],
-      [0.4, 0.8, 0.4]
+      [0.5, 0.8, 0.5]
     );
-
+    
     const clip = new THREE.AnimationClip("Action", 2, [scaleKF, opacityKF]);
     let mixer = new THREE.AnimationMixer(town);
     const clipAction = mixer.clipAction(clip);
-    clipAction.setLoop(THREE.LoopRepeat, 10);
+    clipAction.setLoop(THREE.LoopRepeat, 20);
     clipAction.play();
-
-    this.mixers.push(mixer);
+    
+     // TODO: remove from updatables - miht use a temp upadatable arr only for temp animations (to clear danach)
+    town.tick = (delta) => {
+      mixer.update(delta)
+    }
+    this.updatables.push(town)
   };
 
-  spawnPlaceableRoad = (road_id, callbackOnSelection) => {
-    // create the spheres
+
+  spawnPlaceableRoad = (roadData, callbackOnSelection) => {
+    // create the road
     let objGeo = new THREE.BoxGeometry(1, 1, 1);
     let objMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
       opacity: 0.4,
     });
-    let coords = roadCoords[road_id];
-
     let road = new THREE.Mesh(objGeo, objMat);
+    
+    let coords = roadCoords[roadData.id];
+
     road.position.set(coords.x, coords.y, coords.z);
+    road.rotation.set(0, coords.yangle, 0);
+    road.scale.set(0.12, 0.18, 0.45);   // ho ridotto un po la z cosi non si overlappano...
     road.name = "placeable_road";
-    road.userData.road_id = road_id;
+    road.userData.roadData = roadData;
     this.scene.add(road);
 
     // add event listener
     mmi.addHandler("placeable_road", "click", callbackOnSelection);
 
     // add animations
-    const scaleKF = new THREE.VectorKeyframeTrack(
-      ".scale",
-      [0, 1, 2],
-      [1, 1, 1, 2, 2, 2, 1, 1, 1]
-    );
     const opacityKF = new THREE.VectorKeyframeTrack(
       ".material.opacity",
       [0, 1, 2],
-      [0.4, 0.8, 0.4]
+      [0.5, 0.8, 0.5]
     );
 
-    const clip = new THREE.AnimationClip("Action", 2, [scaleKF, opacityKF]);
+    const clip = new THREE.AnimationClip("Action", 2, [opacityKF]);
     let mixer = new THREE.AnimationMixer(road);
     const clipAction = mixer.clipAction(clip);
-    clipAction.setLoop(THREE.LoopRepeat, 10);
+    clipAction.setLoop(THREE.LoopRepeat, 20);
     clipAction.play();
 
-    this.mixers.push(mixer);
+    // TODO: remove from updatables - miht use a temp upadatable arr only for temp animations (to clear danach)
+    road.tick = (delta) => {
+      mixer.update(delta)
+    }
+    this.updatables.push(road)
   };
 
   showAvailableSpots = (spots, callbackOnSelection) => {

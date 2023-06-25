@@ -1,43 +1,74 @@
 export class TurnSystem {
-    constructor(players) {
-        this.playerOrder = players.map(el => el.id)
-        this.playerOrderIndex = 0
-        this.player = this.playerOrder[this.playerOrderIndex]
+  constructor(players) {
+    this.playerOrder = players.map((el) => el.id);
+    this.playerOrderIndex = 0;
+    this.player = this.playerOrder[this.playerOrderIndex];
 
-        this.isInitialTurn = true
-        this.initialTurnSteps = {
-            [players[0].id]: 0,
-            [players[1].id]: 0,
-            // [players[2].id]: 0,
-            // [players[3].id]: 0,
-        }
+    this.initialTurnSteps = {
+      [players[0].id]: 0,
+      [players[1].id]: 0,
+      // [players[2].id]: 0,
+      // [players[3].id]: 0,
+    };
 
-        this.round = 0
+    this.round = -1;
+  }
+
+  nextTurn = () => {
+    console.log("normal turn");
+    return {
+      isInitialTurn
+    }
+  };
+
+  nextInitialTurn = () => {
+    // di chi è il turno ora
+    this.player = this.playerOrder[this.playerOrderIndex];
+
+    // ok
+    if (this.initialTurnSteps[this.player] === 4) {
+      this.round = 0
+      return {
+        round: this.round
+      }
     }
 
-    nextTurn = () => {
-        if (this.checkIsInitialTurn) this.nextInitialTurn()
-        else {
-            console.log('normal turn')
-        }
+    let data = {
+      round: this.round
+    };
+    data.player = this.player;
+
+    // cosa puo fare in questo turno
+    switch (this.initialTurnSteps[this.player]) {
+      case 0:
+      case 2:
+        data.send = "spots";
+        break;
+
+      case 1:
+      case 3:
+        data.send = "roads";
+        break;
     }
 
-    nextInitialTurn = () => {
-        const turnPlayer = this.player
-        this.initialTurnSteps[turnPlayer]++
+    this.initialTurnSteps[this.player]++;
 
-        if (this.initialTurnSteps[turnPlayer] === 1 || this.initialTurnSteps[turnPlayer] === 3) {
-            // time to place a road
-            
-        } else if (this.initialTurnSteps[turnPlayer] === 2) {
-            // time to pass initial turn
-        } else if (this.initialTurnSteps[turnPlayer] === 4) {
-            // initial turn over for player
-        }
+    // controllo se devo passare il turno
+    if (this.initialTurnSteps[this.player] === 2) {
+      // primo turno di early game - finito
+      this.playerOrderIndex++;
+
+      if (this.playerOrderIndex === this.playerOrder.length)
+        this.playerOrderIndex = 0;
+
+    } else if (this.initialTurnSteps[this.player] === 4) {
+      // secondo turno di early game - finito
+      this.playerOrderIndex++;
+
+      if (this.playerOrderIndex === this.playerOrder.length)
+        this.playerOrderIndex = 0;
     }
 
-    checkIsInitialTurn = () => {
-        return (this.initialTurnSteps[0] === 4) && (this.initialTurnSteps[1] === 4) 
-        /*&& (this.initialTurn[2] === 2) && (this.initialTurn[3] === 2)*/
-    }
+    return data;
+  };
 }

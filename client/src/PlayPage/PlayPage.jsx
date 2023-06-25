@@ -30,6 +30,7 @@ export default function PlayPage({ socket }) {
       initialGameState.server_players.filter((el) => el.id === socket.id)[0]
     );
     setLoaded(true);
+
   }, []);
 
   useEffect(() => {
@@ -44,15 +45,18 @@ export default function PlayPage({ socket }) {
   }, [socket, loaded]);
 
   const processEarlyGameUpdate = (serverData) => {
-    console.log(serverData);
-    
     // who is playing this turn
-    setTurn(serverData.turnPlayer);
+    setTurn(players.filter(el => el.id === serverData.player)[0]);
+    
+    // update the board first
+    const player = players.filter(player => player.id === serverData.updateData.player)[0]
+    world.current.updateScene({
+      ...serverData.updateData,
+      player
+    })
 
-    if (serverData.turnPlayer === currentPlayer.id) {
-      console.log("my turn!");
-
-      // propagate to world
+    // then play my turn (if it is)
+    if (serverData.player === currentPlayer.id) {
       world.current.earlyGame(
         {
           id: currentPlayer.id,
@@ -61,12 +65,7 @@ export default function PlayPage({ socket }) {
         serverData.availableSpots,
         serverData.availableRoads
       );
-
-      // propagate to GUI
-      // ?
-    } else {
-      console.log("not my turn");
-    }
+    } 
   };
 
   const processServerUpdate = (updateData) => {

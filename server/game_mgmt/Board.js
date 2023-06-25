@@ -14,14 +14,18 @@ export class Board {
 
     createGraph() {
         this.graph = new Graph()
+        let to, id;
 
         // add nodes
         for (let tile = 1; tile <= 54; tile++) {
             this.graph.addSpot(tile)
 
             // add roads
-            for (let to of roadConnections[tile]) {
-                this.graph.addRoad(tile, to)
+            for (let road of roadConnections[tile]) {
+                // road = { 4: '1' }, { 5: '2' }
+                to = Object.keys(road)[0]
+                id = road[to]
+                this.graph.addRoad(tile, to, id)
             }
         }
     }
@@ -55,11 +59,15 @@ export class Board {
         }
     }
 
-    showAvailableSpots = (player_id) => {
-        return this.graph.showAvailableSpots(player_id)
+    getAvailableSpots = (player_id) => {
+        return this.graph.getAvailableSpots(player_id)
+    }
+    getAvailableRoads = (player_id) => {
+        return this.graph.getAvailableRoads(player_id)
     }
 
     spawnTown = (spot_id, player_id) => {
+        console.log(spot_id, player_id)
         this.graph.buildSpot(spot_id, player_id)
     }
     spawnRoad = (from, to, player_id) => {
