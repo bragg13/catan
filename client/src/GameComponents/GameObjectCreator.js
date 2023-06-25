@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { loadModel } from "../helpers/model_loader";
 import { hexCoords, roadCoords } from "../assets/coords";
+import SpriteText from 'three-spritetext'
 
 export class GameObjectCreator {
   constructor() {
@@ -23,7 +24,9 @@ export class GameObjectCreator {
   createHexagonBoard = async (board) => {
     let model = null;
     let tiles = [];
-
+    let coords = {};
+    let text;
+    
     // loading models
     for (let m of ["sheep", "wood", "wheat", "clay", "rocks", "bandits"]) {
       model = await loadModel(`/models/${m}.glb`);
@@ -34,9 +37,18 @@ export class GameObjectCreator {
     let currentResource = "";
     model = null;
     board.forEach((el, index) => {
+      coords.x = hexCoords[el.id].x
+      coords.z = hexCoords[el.id].z
+
+      // tile
       currentResource = board[index].resource;
       model = this.loadedModels[currentResource].clone();
-      model.position.set(hexCoords[el.id].x, 0, hexCoords[el.id].z);
+      model.position.set(coords.x, 0, coords.z);
+      
+      // value text
+      text = this.createText(coords.x, 2, coords.z, el.value, (el.value>=6 && el.value<=8) ? "red" : "white")
+      model.add(text)
+
       tiles.push(model);
     });
 
@@ -62,5 +74,14 @@ export class GameObjectCreator {
     road.scale.set(0.12, 0.18, 0.45);
     
     return road
+  }
+
+  createText = (x, y, z, text, color) => {
+    const myText = new SpriteText(text)
+    myText.position.set(0, 0.35, 0)
+    myText.fontSize = 40;
+    myText.textHeight = 0.2;
+    myText.color = color
+    return myText
   }
 }
