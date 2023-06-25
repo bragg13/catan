@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { World } from "./World";
+import { World } from "../GameComponents/World";
 import { useLocation } from "react-router-dom";
 import { MainContainer } from "../GUI";
 

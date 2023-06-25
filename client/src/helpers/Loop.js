@@ -1,4 +1,4 @@
-import { mmi } from "../PlayPage/World"
+import { mmi } from "../GameComponents/World";
 import { Clock } from "three"
 const clock = new Clock();
 

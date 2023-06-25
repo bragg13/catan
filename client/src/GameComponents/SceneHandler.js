@@ -3,6 +3,7 @@ import { loadModel } from "../helpers/model_loader.js";
 import { hexCoords, roadCoords, spotCoords } from "../assets/coords.js";
 import { Board } from "./Board.js";
 import { mmi } from "./World.js";
+import { GameObjectCreator } from "./GameObjectCreator.js";
 
 export class SceneHandler {
   constructor(server_info) {
@@ -10,121 +11,60 @@ export class SceneHandler {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("skyblue");
 
-    this.board = new Board(server_info["server_board"]);
+    this.board = server_info["server_board"].tiles;
+    this.players = server_info["server_board"].players;
     this.turn = server_info["server_turn"];
 
     // stuff to be on screen - create
-    this.loadedModels = {};
+    this.gameObjectCreator = new GameObjectCreator()
     this.roads = new THREE.Group();
     this.spots = new THREE.Group();
     this.tiles = new THREE.Group();
     this.bandits = null;
 
-    this.sun = new THREE.DirectionalLight(0xffffff, 2);
-    this.sun.position.set(-5, 10, 0);
-    this.sun.tick = (delta) => {
-      if (this.sun.position.x >= 5) this.sun.position.x = -5;
-      this.sun.position.x += 0.01*delta;
-    }
+    this.sun = this.gameObjectCreator.createSun(-5, 10, 0, )
     this.scene.add(this.sun);
 
     this.updatables = []
   }
 
   init = async () => {
-    await this.spawnTiles();
+    this.tiles.add(...await this.gameObjectCreator.createHexagonBoard(this.board));
     this.scene.add(this.tiles);
   };
 
-  /**
-   * Returns the scene object which handles the rendering
-   * @returns Scene
-   */
   getScene = () => {
     return this.scene;
   };
 
-  /**
-   * Spawn the hexagonal tiles on screen
-   */
-  spawnTiles = async () => {
-    let model = null;
-
-    // loading models
-    for (let m of ["sheep", "wood", "wheat", "clay", "rocks", "bandits"]) {
-      model = await loadModel(`/models/${m}.glb`);
-      this.loadedModels[m] = model;
-    }
-
-    // assigning models
-    let currentResource = "";
-    model = null;
-    this.board.tiles.forEach((el, index) => {
-      currentResource = this.board.tiles[index].resource;
-      model = this.loadedModels[currentResource].clone();
-      model.position.set(hexCoords[el.id].x, 0, hexCoords[el.id].z);
-      this.tiles.add(model);
-    });
-  };
-
-  /**
-   * Attempts to spawn a new town at spot_id owned by player
-   * @param {Number} spot_id
-   * @param {Object} player
-   */
   spawnTown = (spot_id, player) => {
-    let objGeo = new THREE.SphereGeometry(0.1);
-    let objMat = new THREE.MeshPhongMaterial({ color: player.color });
     let coords = spotCoords[spot_id];
-    let sphere = new THREE.Mesh(objGeo, objMat);
-
-    sphere.position.set(coords.x, coords.y, coords.z);
-    sphere.name = `town_${spot_id}_${player.id}`;
-
-    // this.board.spawnTown(spot_id, player.id);
-    this.scene.add(sphere);
+    let town = this.gameObjectCreator.createTown(coords.x, coords.y, coords.z, {color: player.color})
+    town.name = `town_${spot_id}_${player.id}`;
+    this.scene.add(town);
   };
 
-  /**
-   * Attempts to spawn a new road at from_to owned by player
-   * @param {Number} from Road starting spot
-   * @param {Number} to Road destination spot
-   * @param {Object} player
-   */
   spawnRoad = (road_id, player) => {
-    let objGeo = new THREE.BoxGeometry(1, 1, 1);
-    let objMat = new THREE.MeshPhongMaterial({ color: player.color });
     let coords = roadCoords[road_id];
-    let road = new THREE.Mesh(objGeo, objMat);
-
-    road.position.set(coords.x, coords.y, coords.z);
-    road.rotation.set(0, coords.yangle, 0);
-    road.scale.set(0.12, 0.18, 0.65);
+    let road = this.gameObjectCreator.createRoad(coords.x, coords.y, coords.z, coords.yangle, {color: player.color})
     road.name = `road_${road_id}_${player.id}`;
-
-    // this.board.spawnRoad(from, to, player.id);
     this.scene.add(road);
   };
 
   spawnPlaceableTown = (spot_id, callbackOnSelection) => {
-    // create the spheres
-    let objGeo = new THREE.SphereGeometry(0.1);
-    let objMat = new THREE.MeshBasicMaterial({
+    let coords = spotCoords[spot_id];
+    let options = {
       color: 0xffffff,
       transparent: true,
       opacity: 0.4,
-    });
-    let coords = spotCoords[spot_id];
-    
-    let town = new THREE.Mesh(objGeo, objMat);
-    town.position.set(coords.x, coords.y, coords.z);
+    }
+
+    let town = this.gameObjectCreator.createTown(coords.x, coords.y, coords.z, options)
     town.name = "placeable_town";
     town.userData.spot_id = spot_id;
-
-    
     this.scene.add(town);
     
-    // add event listener
+    // add event listener - forse mi basta farlo una volta?
     mmi.addHandler("placeable_town", "click", callbackOnSelection);
 
     // add animations
@@ -142,7 +82,7 @@ export class SceneHandler {
     const clip = new THREE.AnimationClip("Action", 2, [scaleKF, opacityKF]);
     let mixer = new THREE.AnimationMixer(town);
     const clipAction = mixer.clipAction(clip);
-    clipAction.setLoop(THREE.LoopRepeat, 20);
+    clipAction.setLoop();
     clipAction.play();
     
      // TODO: remove from updatables - miht use a temp upadatable arr only for temp animations (to clear danach)
@@ -154,20 +94,14 @@ export class SceneHandler {
 
 
   spawnPlaceableRoad = (roadData, callbackOnSelection) => {
-    // create the road
-    let objGeo = new THREE.BoxGeometry(1, 1, 1);
-    let objMat = new THREE.MeshBasicMaterial({
+    let coords = roadCoords[roadData.id];
+    let options = {
       color: 0xffffff,
       transparent: true,
       opacity: 0.4,
-    });
-    let road = new THREE.Mesh(objGeo, objMat);
-    
-    let coords = roadCoords[roadData.id];
+    };
 
-    road.position.set(coords.x, coords.y, coords.z);
-    road.rotation.set(0, coords.yangle, 0);
-    road.scale.set(0.12, 0.18, 0.45);   // ho ridotto un po la z cosi non si overlappano...
+    let road = this.gameObjectCreator.createRoad(coords.x, coords.y, coords.z, coords.yangle, options)
     road.name = "placeable_road";
     road.userData.roadData = roadData;
     this.scene.add(road);
@@ -185,7 +119,7 @@ export class SceneHandler {
     const clip = new THREE.AnimationClip("Action", 2, [opacityKF]);
     let mixer = new THREE.AnimationMixer(road);
     const clipAction = mixer.clipAction(clip);
-    clipAction.setLoop(THREE.LoopRepeat, 20);
+    clipAction.setLoop();
     clipAction.play();
 
     // TODO: remove from updatables - miht use a temp upadatable arr only for temp animations (to clear danach)
