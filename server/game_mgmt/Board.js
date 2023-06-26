@@ -33,9 +33,10 @@ export class Board {
     createTiles = () => {
         let _values = values.sort(() => Math.random() - 0.5);
         let _resourceTypes = resourceTypes.sort(() => Math.random() - 0.5);
+        let valueIndex = 0
 
         for (let i = 0; i < _resourceTypes.length; i++) {
-            let value = (_resourceTypes[i] === "bandits") ? 7 : _values[i];
+            let value = (_resourceTypes[i] === "bandits") ? 7 : _values[valueIndex++];
             this.tiles.push({
                 resource: _resourceTypes[i],
                 value: value,
@@ -44,20 +45,20 @@ export class Board {
         }
     }
 
-    getRandom = (min, max) => {
-        return Math.random() * (max - min) + min;
-    }
+    // getRandom = (min, max) => {
+    //     return Math.random() * (max - min) + min;
+    // }
 
-    shuffleTilesAndValues = () => {
-        let _values = values.sort(() => Math.random() - 0.5);
-        let _resourceTypes = resourceTypes.sort(() => Math.random() - 0.5);
+    // shuffleTilesAndValues = () => {
+    //     let _values = values.sort(() => Math.random() - 0.5);
+    //     let _resourceTypes = resourceTypes.sort(() => Math.random() - 0.5);
 
-        for (let i = 0; i < this.tiles.length; i++) {
-            let value = (_resourceTypes[i] === "bandits") ? 7 : _values[i];
-            this.tiles[i].resource = _resourceTypes[i]
-            this.tiles[i].value = value
-        }
-    }
+    //     for (let i = 0; i < this.tiles.length; i++) {
+    //         let value = (_resourceTypes[i] === "bandits") ? 7 : _values[i];
+    //         this.tiles[i].resource = _resourceTypes[i]
+    //         this.tiles[i].value = value
+    //     }
+    // }
 
     getAvailableSpots = (player_id) => {
         return this.graph.getAvailableSpots(player_id)

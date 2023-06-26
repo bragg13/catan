@@ -1,5 +1,6 @@
 import { mmi } from "../GameComponents/World";
 import { Clock } from "three"
+import { updatables } from "../GameComponents/SceneHandler";
 const clock = new Clock();
 
 export class Loop {
@@ -7,7 +8,6 @@ export class Loop {
         this.camera = camera 
         this.sceneHandler = sceneHandler 
         this.renderer = renderer   
-        this.updatables = []
     }
 
     start() {
@@ -26,7 +26,7 @@ export class Loop {
     tick() {
         const delta = clock.getDelta()
 
-        for (const obj of this.sceneHandler.updatables) {
+        for (const obj of updatables) {
             obj.tick(delta)
         }
     }

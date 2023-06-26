@@ -35,7 +35,7 @@ export class World {
   }
 
   initialize = async (serverData) => {
-    this.sceneHandler = new SceneHandler(serverData);
+    this.sceneHandler = new SceneHandler(serverData, this.camera);
     await this.sceneHandler.init();
 
     // animation loop

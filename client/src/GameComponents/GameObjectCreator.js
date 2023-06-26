@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import { loadModel } from "../helpers/model_loader";
 import { hexCoords, roadCoords } from "../assets/coords";
-import SpriteText from 'three-spritetext'
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { updatables } from "./SceneHandler";
 
 export class GameObjectCreator {
   constructor() {
@@ -13,10 +15,12 @@ export class GameObjectCreator {
     sun.position.set(x, y, z);
 
     // animations
-    sun.tick = (delta) => {
-      if (sun.position.x >= 5) sun.position.x = -5;
-      sun.position.x += 0.01 * delta;
-    };
+    // sun.tick = (delta) => {
+    //   if (sun.position.x >= 5) sun.position.x = -5;
+    //   sun.position.x += 0.01 * delta;
+    // };
+
+    // updatables.push(sun);
 
     return sun;
   };
@@ -25,18 +29,27 @@ export class GameObjectCreator {
     let model = null;
     let tiles = [];
     let coords = {};
-    let text;
-    
-    // loading models
+    let text = null;
+
+    // loading models - hex resources
     for (let m of ["sheep", "wood", "wheat", "clay", "rocks", "bandits"]) {
       model = await loadModel(`/models/${m}.glb`);
       this.loadedModels[m] = model;
     }
 
+    // loading models - values
+    for (let m of ["2", "3", "4", "5", "6", "8", "9", "10", "11", "12"]) {
+      model = await loadModel(`/models/numbers/num_${m}.glb`);
+      this.loadedModels[`num_${m}`] = model;
+    }
+
     // assigning models
     let currentResource = "";
+    let currentValue = "";
+    
     model = null;
-    board.forEach((el, index) => {
+    let index = 0;
+    for (let el of board) {
       coords.x = hexCoords[el.id].x
       coords.z = hexCoords[el.id].z
 
@@ -44,13 +57,28 @@ export class GameObjectCreator {
       currentResource = board[index].resource;
       model = this.loadedModels[currentResource].clone();
       model.position.set(coords.x, 0, coords.z);
-      
+      model.receiveShadow = true;
+
       // value text
-      text = this.createText(coords.x, 2, coords.z, el.value, (el.value>=6 && el.value<=8) ? "red" : "white")
-      model.add(text)
+      currentValue = `num_${board[index].value}`;
+      if (currentValue !== "num_7") {
+        text = this.loadedModels[currentValue].clone();
+
+        text.name = "value_text";        
+        text.scale.set(0.3, 0.3, 0.3);
+        text.material = new THREE.MeshPhongMaterial({ color: (currentValue==='num_8' || currentValue==='num_6') ? 0xff0000 : 0xdddddd })
+        text.castShadow = true;
+        text.receiveShadow = true;
+
+        // make the text always rotate on its y axis
+        text.position.set(0, 0.4, 0);
+        model.add(text);
+        
+      }
 
       tiles.push(model);
-    });
+      index++;
+    };
 
     return tiles;
   };
@@ -73,15 +101,78 @@ export class GameObjectCreator {
     road.rotation.set(0, yangle, 0);
     road.scale.set(0.12, 0.18, 0.45);
     
+    // create opacity animation for road (fade in)
+    road.tick = (delta) => {
+      if (road.material.opacity < 1) {
+        road.material.opacity += 0.01 * delta; 
+      }
+    };
+
+
     return road
   }
 
-  createText = (x, y, z, text, color) => {
-    const myText = new SpriteText(text)
-    myText.position.set(0, 0.35, 0)
-    myText.fontSize = 40;
-    myText.textHeight = 0.2;
-    myText.color = color
-    return myText
+
+  // async createText(x, y, z, text, color) {
+  //   const fontLoader = new FontLoader();
+
+  //   try {
+  //       let font = fontLoader.load('/fonts/Ysabeau.json', font => {
+  //         console.log('font loaded')
+          
+  //         const textGeometry = new TextGeometry(text, {
+  //           font: font,
+  //           size: 1,
+  //           height: 1,
+  //         });
+
+  //         const textMaterial = new THREE.MeshPhongMaterial({ color: color });
+  //         const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+  //         textMesh.position.set(x, y, z);
+  //         textMesh.castShadow = true;
+  //         textMesh.receiveShadow = true;
+  //         return textMesh;
+  //       })
+  //   } catch (error) {
+  //     console.error('Error loading font or creating text:', error);
+  //     throw error;
+  //   }
+  // }
+  
+  async createText(x, y, z, text, color) {
+    const fontLoader = new FontLoader();
+  
+    try {
+      let fontPromise = new Promise((resolve, reject) => {
+        fontLoader.load('/fonts/Ysabeau.json', font => {
+          console.log('font loaded')
+  
+          const textGeometry = new TextGeometry(text, {
+            font: font,
+            size: 1,
+            height: 1,
+          });
+  
+          const textMaterial = new THREE.MeshPhongMaterial({ color: color });
+          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+  
+          textMesh.position.set(x, y, z);
+          textMesh.castShadow = true;
+          textMesh.receiveShadow = true;
+          console.log('returning tm', textMesh)
+          resolve(textMesh);
+        }, undefined, (error) => {
+          reject(error);
+        });
+      });
+  
+      return await fontPromise;
+    } catch (error) {
+      console.error('Error loading font or creating text:', error);
+      throw error;
+    }
   }
+  
+
 }

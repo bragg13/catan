@@ -5,8 +5,9 @@ import { Board } from "./Board.js";
 import { mmi } from "./World.js";
 import { GameObjectCreator } from "./GameObjectCreator.js";
 
+export const updatables = [];
 export class SceneHandler {
-  constructor(server_info) {
+  constructor(server_info, cameraRef) {
     // const server_board, server_bg, server_players} =
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("skyblue");
@@ -22,15 +23,36 @@ export class SceneHandler {
     this.tiles = new THREE.Group();
     this.bandits = null;
 
-    this.sun = this.gameObjectCreator.createSun(-5, 10, 0, )
+    this.sun = this.gameObjectCreator.createSun(-10, 10, 5)
     this.scene.add(this.sun);
 
-    this.updatables = []
+    this.cameraRef = cameraRef;
   }
 
   init = async () => {
     this.tiles.add(...await this.gameObjectCreator.createHexagonBoard(this.board));
     this.scene.add(this.tiles);
+    this.scene.getObjectsByProperty("name", "value_text").forEach((el, index) => {
+      // bouncing animation for el using position.z
+      const bounceKF = new THREE.VectorKeyframeTrack(
+        ".position",
+        [0, 2, 4],
+        [0, 0.4, 0, 0, 0.5, 0, 0, 0.4, 0]
+        );
+      const clip = new THREE.AnimationClip("Action", 4, [bounceKF]);
+      let mixer = new THREE.AnimationMixer(el);
+      const clipAction = mixer.clipAction(clip);
+      clipAction.setLoop();
+      clipAction.play();
+
+      el.tick = (delta) => {
+        mixer.update(delta)
+      }
+    
+      updatables.push(el);
+    })
+
+    console.log(updatables)
   };
 
   getScene = () => {
@@ -73,7 +95,7 @@ export class SceneHandler {
       [0, 1, 2],
       [1, 1, 1, 1.1, 1.1, 1.1, 1, 1, 1]
       );
-      const opacityKF = new THREE.VectorKeyframeTrack(
+    const opacityKF = new THREE.VectorKeyframeTrack(
         ".material.opacity",
       [0, 1, 2],
       [0.5, 0.8, 0.5]
@@ -89,7 +111,7 @@ export class SceneHandler {
     town.tick = (delta) => {
       mixer.update(delta)
     }
-    this.updatables.push(town)
+    updatables.push(town)
   };
 
 
@@ -126,7 +148,7 @@ export class SceneHandler {
     road.tick = (delta) => {
       mixer.update(delta)
     }
-    this.updatables.push(road)
+    updatables.push(road)
   };
 
   showAvailableSpots = (spots, callbackOnSelection) => {
