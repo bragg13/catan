@@ -14,11 +14,17 @@ export class Room {
   }
 
   joinRoom = (player) => {
+    // add player to room and to player list
     this.players.push(player);
     io.sockets.sockets.get(player.id).join(this.id);
-    io.sockets.sockets
-      .get(player.id)
-      .emit("playerInfo", { msg: "playerInfo", ...player });
+
+    // emit player info to player
+    io.sockets.sockets.get(player.id).emit("playerInfo", {
+      msg: "playerInfo",
+      ...player,
+    });
+
+    // emit updated room info to room
     io.to(this.id).emit("roomJoined", {
       msg: "roomJoined",
       roomId: this.id,
@@ -53,25 +59,33 @@ export class Room {
 
   processPlayerUpdate = (playerUpdate) => {
     console.log(playerUpdate);
+
     switch (playerUpdate.msg) {
-      case "clientReady":
-        console.log("[SERVER] Room - client ready");
+      case "earlyGameClientReady":
         this.playersReady.push(playerUpdate.from);
         if (this.playersReady.length === this.players.length) {
-          this.gameStatus = "started";
+          this.playersReady.length = 0;
+          this.gameStatus = "earlyGame";
           this.handleEarlyGame();
         }
         break;
 
+      case "clientReady":
+        this.playersReady.push(playerUpdate.from);
+        if (this.playersReady.length === this.players.length) {
+          this.playersReady.length = 0;
+          this.gameStatus = "game";
+          this.handleGame();
+        }
+        break;
+
       case "selectedTown":
-        console.log(
-          `[SERVER] Room - Player ${playerUpdate.from} has selected a town`
-        );
-        this.game.selectedTown(playerUpdate.selectedTown, playerUpdate.from);
+        this.game.selectedTown(playerUpdate.updateData.selectedTown, playerUpdate.from);
         this.handleEarlyGame({
-          msg: 'newTown',
-          player: playerUpdate.from,
-          town: playerUpdate.selectedTown
+          msg: "newTown",
+          updatedBy: playerUpdate.from,
+          town: playerUpdate.updateData.selectedTown,
+          road: null
         });
         break;
 
@@ -79,17 +93,37 @@ export class Room {
         console.log(
           `[SERVER] Room - Player ${playerUpdate.from} has selected a road`
         );
-        this.game.selectedRoad(playerUpdate.selectedRoad, playerUpdate.from);
+        this.game.selectedRoad(playerUpdate.updateData.selectedRoad, playerUpdate.from);
         this.handleEarlyGame({
-          msg: 'newRoad',
-          player: playerUpdate.from,
-          road: playerUpdate.selectedRoad
+          msg: "newRoad",
+          updatedBy: playerUpdate.from,
+          road: playerUpdate.updateData.selectedRoad,
+          town: null
         });
+        break;
+
+      case "selectedHarvestSpot":
+        console.log(
+          `[SERVER] Room - Player ${playerUpdate.from} has selected a harvest spot`
+        );
+        this.game.selectedHarvestSpot(
+          playerUpdate.updateData.selectedHarvestSpot,
+          playerUpdate.from
+        );
+        this.handleEarlyGame();
+        break;
+
+      case "diceRolled":
+        console.log(
+          `[SERVER] Room - Player ${playerUpdate.from} has rolled the dice`
+        );
+        this.game.diceRolled(playerUpdate.from, playerUpdate.updateData.diceValue);
+        this.handleGame();
         break;
 
       case "turnDone":
         console.log("[SERVER] Room - turn done");
-        this.handleGame(playerUpdate)
+        this.handleGame(playerUpdate);
         break;
 
       default:
@@ -98,37 +132,52 @@ export class Room {
   };
 
   handleGame = (updateData) => {
-    console.log('game actaully started')
-  }
+    console.log("game actaully started");
+  };
 
-  handleEarlyGame = (additionalUpdateData) => {
+  handleEarlyGame = (additionalUpdateData = null) => {
     console.log("[SERVER] Room - sending early game update");
+    console.log('additionalUpdateData', additionalUpdateData)
     let turnData = this.game.turnSystem.nextInitialTurn();
 
-    if (turnData.round===0) {
-        this.handleGame(additionalUpdateData)
+    // if early game is over
+    if (turnData.round === 0) {
+      // send last early game update (last player's inventory)
+      io.to(this.id).emit("earlyGameUpdate", {
+        availableSpots: null,
+        availableRoads: null,
+        availableHarvestSpots: null,
+        turn: turnData,
+        players: this.game.players,
+        updatedBoard: { ...additionalUpdateData },
+      });
     }
+
+    // else send update to players
     else {
-        let data = {}
-        data.player = turnData.player
-        if (turnData.send === "spots") {
-          data.availableSpots = this.game.getAvailableSpots(
-            turnData.player
-          );
-          data.availableRoads = null;
-    
-        } else {
-          data.availableSpots = null;
-          data.availableRoads = this.game.getAvailableRoads(
-            turnData.player
-          );
-        }
+      let availableRoads = null,
+        availableSpots = null,
+        availableHarvestSpots = null;
 
-        data.updateData = {...additionalUpdateData}
-    
-        io.to(this.id).emit("earlyGameUpdate", data);
+      if (turnData.action === "town_1" || turnData.action === "town_2") {
+        availableSpots = this.game.getAvailableSpots(turnData.player);
+      } else if (turnData.action === "road_1" || turnData.action === "road_2") {
+        availableRoads = this.game.getAvailableRoads(turnData.player);
+      } else if (turnData.action === "harvest") {
+        availableHarvestSpots = this.game.getAvailableHarvestSpots(
+          turnData.player
+        );
+      }
 
+      // send update to players
+      io.to(this.id).emit("earlyGameUpdate", {
+        availableSpots,
+        availableRoads,
+        availableHarvestSpots,
+        turn: turnData,
+        players: this.game.players,
+        updatedBoard: { ...additionalUpdateData },
+      });
     }
-
   };
 }

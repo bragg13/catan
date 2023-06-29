@@ -60,11 +60,22 @@ export class Board {
     //     }
     // }
 
+    getTileResource = (tileId) => {
+        return this.tiles[tileId - 1].resource
+    }
+
+    getTileValue = (tileId) => {
+        return this.tiles[tileId - 1].value
+    }
+
     getAvailableSpots = (player_id) => {
         return this.graph.getAvailableSpots(player_id)
     }
     getAvailableRoads = (player_id) => {
         return this.graph.getAvailableRoads(player_id)
+    }
+    getPlayerTowns = (player_id) => {
+        return this.graph.getPlayerTowns(player_id)
     }
 
     spawnTown = (spot_id, player_id) => {

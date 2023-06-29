@@ -12,10 +12,19 @@ import {
 import { inventory, crafting, menus } from "../helpers/GUI_helpers";
 import "./GUIStyle.css";
 
-export default function MainMenu({ handleCrafting }) {
+export default function MainMenu({ currentPlayer, handleCrafting }) {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const renderCraftingItems = (items) => {
+    // calculate how many and which items can be crafted
+    // const canCraft = crafting.filter((res) => {
+    //   let canCraft = true;
+    //   res.cost.forEach((cost) => {
+    //     if (items[cost.name] < cost.amount) canCraft = false;
+    //   });
+    //   return canCraft;
+    // });
+
     return crafting.map((res) => (
       <Stack
       className="MainMenu-item"
@@ -37,7 +46,8 @@ export default function MainMenu({ handleCrafting }) {
     ));
   };
 
-  const renderInventoryItems = (items) => {
+  const renderInventoryItems = () => {
+    const items = currentPlayer.inventory;
     return inventory.map((res) => (
       <Stack 
       className="MainMenu-item"

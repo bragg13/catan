@@ -126,4 +126,12 @@ export class Graph {
         console.log(availableRoads)
         return availableRoads
     }
+
+    getPlayerTowns = (player_id) => {
+        let playerTowns = []
+        for (const [spot_id, built_by] of Object.entries(this.spots)) {
+            if (built_by === player_id) playerTowns.push(spot_id)
+        }
+        return playerTowns
+    }
 }

@@ -237,6 +237,15 @@ class MouseMeshInteraction {
         }
     }
 
+    removeHandler(mesh_name, event_type) {
+        if (this.handlers.has(event_type)) {
+            const handlers_of_event = this.handlers.get(event_type);
+            const newHandler = handlers_of_event.filter(handler => handler.mesh_name !== mesh_name);
+            this.handlers.set(event_type, [...newHandler]);
+            // this.handlers.get(event_type).push([...newHandler]);
+        }
+    }
+
     update() {
         if (this.updated) {
             // update the picking ray with the camera and mouse position

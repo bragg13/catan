@@ -62,9 +62,9 @@ export default function Players({players, currentPlayer}) {
       elevation={3}
       className="Players-container"
     >
-      {players.map((el) => 
+      {Object.keys(players).map((player_id) => 
         <Paper key={crypto.randomUUID()}>
-        {getPlayerUI(el)}
+        {getPlayerUI(players[player_id])}
         </Paper>
         )}
     </Paper>

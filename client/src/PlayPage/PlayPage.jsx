@@ -11,75 +11,56 @@ export default function PlayPage({ socket }) {
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [turn, setTurn] = useState(null);
 
-  // component initialisation
   useEffect(() => {
-    world.current = new World("three-js-canvas", socket);
     const initialGameState = location.state.initialGameState;
 
-    const server_info = {
-      server_board: initialGameState.server_board,
-      server_turn: initialGameState.server_turn,
-      server_players: initialGameState.server_players,
-    };
+    // initialize the world
+    world.current = new World("three-js-canvas", socket);
+    world.current.initialize(initialGameState);
 
-    world.current.initialize(server_info);
-
-    // GUI handling
-    setPlayers(initialGameState.server_players);
-    setCurrentPlayer(
-      initialGameState.server_players.filter((el) => el.id === socket.id)[0]
-    );
+    // initialize the GUI
+    setPlayers(initialGameState.players);
+    setTurn(initialGameState.turn);
+    setCurrentPlayer(initialGameState.players[socket.id]);
     setLoaded(true);
-
   }, []);
 
+  // listen to server updates
   useEffect(() => {
     if (loaded) {
-      socket.on("serverUpdate", (updateData) =>
-        processServerUpdate(updateData)
-      );
       socket.on("earlyGameUpdate", (updateData) =>
         processEarlyGameUpdate(updateData)
       );
+      socket.on("serverUpdate", (updateData) => processGameUpdate(updateData));
     }
   }, [socket, loaded]);
 
-  const processEarlyGameUpdate = (serverData) => {
-    // who is playing this turn
-    setTurn(players.filter(el => el.id === serverData.player)[0]);
-    
-    // update the board first
-    const player = players.filter(player => player.id === serverData.updateData.player)[0]
+  const processEarlyGameUpdate = (gameUpdate) => {
+    console.log('gameUpdate', gameUpdate)
+    // update the board
     world.current.updateScene({
-      ...serverData.updateData,
-      player
-    })
+      ...gameUpdate.updatedBoard,
+    });
 
-    // then play my turn (if it is)
-    if (serverData.player === currentPlayer.id) {
-      world.current.earlyGame(
-        {
-          id: currentPlayer.id,
-          color: currentPlayer.color
-        }, 
-        serverData.availableSpots,
-        serverData.availableRoads
-      );
-    } 
+    // update the GUI - TODO: might just use setState
+    setTurn(gameUpdate.turn);
+    setPlayers((prevPlayers) => {
+      return { ...prevPlayers, ...gameUpdate.players };
+    });
+    setCurrentPlayer((prevPlayer) => {
+      return { ...prevPlayer, ...gameUpdate.players[socket.id] };
+    });
+
+    // play the turn (if it is mine)
+    if (gameUpdate.turn.player === socket.id) {
+      world.current.handleEarlyGame(currentPlayer, {...gameUpdate});
+    }
   };
 
-  const processServerUpdate = (updateData) => {
-    console.log(updateData);
+  const processGameUpdate = (gameUpdate) => {
+    console.log(gameUpdate);
 
-    const data = {
-      // scomporre questo oggetto è inutile?
-      server_board: updateData.server_board,
-      server_turn: updateData.server_turn,
-      server_players: updateData.server_players,
-    };
-
-    // mid game
-    world.current.updateScene(data);
+    world.current.updateScene(...gameUpdate.updatedBoard);
   };
 
   const handleCrafting = () => {

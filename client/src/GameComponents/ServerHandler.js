@@ -3,8 +3,8 @@ export class ServerHandler {
         this.socket = socket
     }
 
-    updateServer = (updateData) => {
-        this.socket.emit('playerUpdate', {from: this.socket.id, ...updateData})
+    updateServer = (msg, updateData = null) => {
+        this.socket.emit('playerUpdate', {from: this.socket.id, msg, updateData})
     }
 
 }

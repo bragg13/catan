@@ -10,41 +10,100 @@ export default function MainContainer({
   currentPlayer,
   turn,
 }) {
+  const [openSnackbar, setOpenSnackbar] = useState(true);
+  const verticalTop = "top";
+  const verticalBottom = "bottom";
+  const horizontal = "center";
 
-  const [openSnackbar, setOpenSnackbar] = useState(true)
-
-  const handleClose = () => {setOpenSnackbar(false)}
-  const vertical = 'top'
-  const horizontal = 'center'
-
-  function SlideTransition(props) {
+  function SlideTransitionDown(props) {
     return <Slide {...props} direction="down" />;
+  }
+  function SlideTransitionUp(props) {
+    return <Slide {...props} direction="up" />;
+  }
+
+  function whoseTurn() {
+    return currentPlayer.id === turn.player
+      ? `È il tuo turno!`
+      : `È il turno di ${players[turn.player].username}!`;
+  }
+
+  function whatAction() {
+    let msg = "";
+
+    // what to do
+    switch (turn.action) {
+      case "town_1":
+        msg += `Dove costruirai il tuo primo villaggio?`;
+        break;
+      case "town_2":
+        msg += `Ora scegli dove costruire il secondo villaggio!`;
+        break;
+      case "road_1":
+        msg += `Bene! E la tua prima strada?`;
+        break;
+      case "road_2":
+        msg += `È tempo di realizzare la tua seconda strada!`;
+        break;
+      case "dice":
+        msg += `Tira i dadi!`;
+        break;
+      case "robber":
+        msg += `Sposta il ladro!`;
+        break;
+      case "harvest":
+        msg += `Seleziona un villaggio da cui raccogliere le prime risorse!`;
+        break;
+      default:
+        break;
+    }
+    return msg;
   }
 
   return (
     <>
       <Box height="100%" width="100%">
-      {/* SNACKBAR */}
-      {
-        turn !== null &&
-          <Snackbar
-            anchorOrigin={{ vertical, horizontal }}
-            open={openSnackbar}
-            key={vertical + horizontal}
-            TransitionComponent={SlideTransition}
-          >
-            <Alert sx={{textAlign: 'center', width: '100%'}} severity={(currentPlayer.id === turn.id) ? 'success' : 'info'}>
-            {(currentPlayer.id === turn.id) 
-              ? <Typography>È il <strong>tuo</strong> turno!</Typography> 
-              : <Typography>È il turno di <strong>{turn.username}</strong>!</Typography>
-              }
-            </Alert>
-
+        {/* SNACKBAR */}
+        {turn !== null && (
+          <>
+            <Snackbar
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+              open={openSnackbar}
+              key={verticalTop + horizontal}
+              TransitionComponent={SlideTransitionDown}
+            >
+              <Alert
+                sx={{ textAlign: "center", width: "100%" }}
+                severity={currentPlayer.id === turn.player ? "success" : "info"}
+              >
+                {whoseTurn()}
+              </Alert>
             </Snackbar>
-      }
+            {currentPlayer.id === turn.player && (
+              <Snackbar
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                open={openSnackbar}
+                key={verticalBottom + horizontal}
+                TransitionComponent={SlideTransitionUp}
+              >
+                <Alert
+                  sx={{ textAlign: "center", width: "100%" }}
+                  severity={
+                    currentPlayer.id === turn.player ? "success" : "info"
+                  }
+                >
+                  {whatAction()}
+                </Alert>
+              </Snackbar>
+            )}
+          </>
+        )}
 
-      {/* GUI */}
-        <MainMenu handleCrafting={handleCrafting} />
+        {/* GUI */}
+        <MainMenu
+          currentPlayer={currentPlayer}
+          handleCrafting={handleCrafting}
+        />
         <Players players={players} currentPlayer={currentPlayer} />
         <Dice
           handleDiceRoll={handleDiceRoll}

@@ -1,6 +1,15 @@
 import { Room } from "./Room.js"
 const rooms = {}  // on redis later
-let colors = ['#f44336', '#3f51b5', '#4CAF50', '#ff5722']
+const idk = ['a', 'b', 'c', 'd', 'e', 'f', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+export const generateRandomColor = () => {
+    let color = '#'
+    for (let i = 0; i < 6; i++) {
+        color += idk[Math.floor(Math.random() * idk.length)]
+    }
+    return color
+}
+
 
 export const onConnection = socket => {
     console.log(`user connected: ${socket.id}`)
@@ -10,15 +19,13 @@ export const onConnection = socket => {
         const player = {
             id: socket.id, 
             username: username, 
-            color: colors.pop()
+            color: generateRandomColor()
         }
 
         if (roomId in rooms) {
             // join existing room
             if (rooms[roomId].players.length < rooms[roomId].maxPlayers) {
                 rooms[roomId].joinRoom(player)
-                console.log(`Player ${player.username} joined room ${roomId}`)
-                // socket.emit('roomJoined', {roomId, player})
             }
 
         } else {
@@ -26,8 +33,6 @@ export const onConnection = socket => {
             let room = new Room(roomId, 2)
             rooms[roomId] = room
             rooms[roomId].joinRoom(player)
-            console.log(`Room ${roomId} created by ${player.username}`)
-            // socket.emit('roomCreated', {roomId})
         }
 
         if (rooms[roomId].players.length === rooms[roomId].maxPlayers){

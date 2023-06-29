@@ -49,25 +49,29 @@ export class World {
     this.loop.start();
 
     // check in with the server
-    serverHandler.updateServer({ msg: "clientReady" });
+    serverHandler.updateServer("earlyGameClientReady");
   };
 
-  earlyGame = (player, availableSpots, availableRoads) => {
+  handleEarlyGame = (player, serverData) => {
+    console.log('handleEarlyGame', player, serverData)
+    const availableSpots = serverData.availableSpots;
+    const availableRoads = serverData.availableRoads;
+    const availableHarvestSpots = serverData.availableHarvestSpots;
+
     if (availableSpots !== null) {
       console.log("seleziona un posto dove costruire una TOWN");
 
       // mostro spot available per una town
       this.sceneHandler.showAvailableSpots(availableSpots, (mesh) => {
         const selectedSpotId = mesh.userData.spot_id;
-        console.log("selezionato", selectedSpotId);
+        console.log('selected', selectedSpotId)
 
         // update scene
         this.sceneHandler.removeFromSceneByName("placeable_town");
-        this.sceneHandler.spawnTown(selectedSpotId, player);
+        this.sceneHandler.spawnTown(selectedSpotId, player.id);
 
         // update server
-        serverHandler.updateServer({
-          msg: "selectedTown",
+        serverHandler.updateServer("selectedTown", {
           selectedTown: selectedSpotId,
         });
       });
@@ -78,18 +82,32 @@ export class World {
       this.sceneHandler.showAvailableRoads(availableRoads, (mesh) => {
         const { from, to, id } = mesh.userData.roadData;
 
-        console.log("selezionato", id);
-
         // update scene
         this.sceneHandler.removeFromSceneByName("placeable_road");
-        this.sceneHandler.spawnRoad(id, player);
+        this.sceneHandler.spawnRoad(id, player.id);
 
         // update server
-        serverHandler.updateServer({
-          msg: "selectedRoad",
+        serverHandler.updateServer("selectedRoad", {
           selectedRoad: { from, to, id },
         });
       });
+    } else {
+      // decide which spot is harvesting for the first time
+      console.log("seleziona un posto da cui raccogliere");
+      this.sceneHandler.showAvailableHarvestSpots(
+        availableHarvestSpots,
+        (mesh) => {
+          const selectedSpotId = mesh.userData.spot_id;
+          this.sceneHandler.removeFromSceneByName("eg_harvest_spot");
+
+          // update server
+          serverHandler.updateServer("selectedHarvestSpot", {
+            selectedHarvestSpot: selectedSpotId,
+          });
+
+          serverHandler.updateServer("clientReady"); // might be redundant
+        }
+      );
     }
   };
 
@@ -97,15 +115,15 @@ export class World {
     console.log(updateData);
     switch (updateData.msg) {
       case "newTown":
-        this.sceneHandler.spawnTown(updateData.town, updateData.player);
+        this.sceneHandler.spawnTown(updateData.town, updateData.updatedBy);
         break;
 
       case "newRoad":
-        this.sceneHandler.spawnRoad(updateData.road.id, updateData.player);
+        this.sceneHandler.spawnRoad(updateData.road.id, updateData.updatedBy);
         break;
 
-        default:
-            break;
+      default:
+        break;
     }
   };
 
@@ -113,45 +131,6 @@ export class World {
   handleDiceRoll = () => {};
   handlePassTurn = () => {};
 
-  // spawnRandomTown = (player) => {
-  //     let spot_id = Math.floor(Math.random() * 53)
-  //     this.sceneHandler.spawnTown(spot_id, player)
-  // }
-  // spawnRandomRoad = (player) => {
-  //     this.sceneHandler.spawnRoad(36, 31, player)
-  // }
-
-  // handleKeyboard = (e) => {
-  //     switch (e.keyCode) {
-  //         case 37:
-  //             console.log('left');
-  //             serverHandler.updateServer({
-  //                 msg: 'spawnCity'
-  //             })
-  //             // this.spawnRandomRoad({ id: 'player_4', color: 0xff0000 })
-  //             break;
-  //         case 38:
-  //             console.log('up');
-  //             this.sceneHandler.spawnPlaceableTown(25)
-  //             break;
-  //         case 39:
-  //             console.log('right');
-  //             this.spawnRandomTown({ id: 'player_4', color: 0xff0000 })
-  //             break;
-  //         case 40:
-  //             console.log('down');
-  //             this.spawnRandomTown({ id: 'player_0', color: 0x00ff00 })
-  //             break;
-  //         default:
-  //             break;
-  //     }
-  // }
-
-  // animate = () => {
-  //     requestAnimationFrame(this.animate);
-
-  //     this.renderer.render(this.sceneHandler.getScene(), this.camera);
-  // }
 }
 
 export { mmi, serverHandler };

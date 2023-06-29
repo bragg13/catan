@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { loadModel } from "../helpers/model_loader.js";
 import { hexCoords, roadCoords, spotCoords } from "../assets/coords.js";
-import { Board } from "./Board.js";
 import { mmi } from "./World.js";
 import { GameObjectCreator } from "./GameObjectCreator.js";
 
@@ -12,9 +11,9 @@ export class SceneHandler {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("skyblue");
 
-    this.board = server_info["server_board"].tiles;
-    this.players = server_info["server_board"].players;
-    this.turn = server_info["server_turn"];
+    this.board = server_info["board"].tiles;
+    this.players = server_info["players"];
+    this.turn = server_info["turn"];
 
     // stuff to be on screen - create
     this.gameObjectCreator = new GameObjectCreator()
@@ -51,29 +50,29 @@ export class SceneHandler {
     
       updatables.push(el);
     })
-
-    console.log(updatables)
   };
 
   getScene = () => {
     return this.scene;
   };
 
-  spawnTown = (spot_id, player) => {
+  spawnTown = (spot_id, playerId) => {
+    const player = this.players[playerId]
     let coords = spotCoords[spot_id];
     let town = this.gameObjectCreator.createTown(coords.x, coords.y, coords.z, {color: player.color})
     town.name = `town_${spot_id}_${player.id}`;
     this.scene.add(town);
   };
 
-  spawnRoad = (road_id, player) => {
+  spawnRoad = (road_id, playerId) => {
+    const player = this.players[playerId]
     let coords = roadCoords[road_id];
     let road = this.gameObjectCreator.createRoad(coords.x, coords.y, coords.z, coords.yangle, {color: player.color})
     road.name = `road_${road_id}_${player.id}`;
     this.scene.add(road);
   };
 
-  spawnPlaceableTown = (spot_id, callbackOnSelection) => {
+  spawnPlaceableTown = (spot_id, spot_name, callbackOnSelection) => {
     let coords = spotCoords[spot_id];
     let options = {
       color: 0xffffff,
@@ -82,12 +81,12 @@ export class SceneHandler {
     }
 
     let town = this.gameObjectCreator.createTown(coords.x, coords.y, coords.z, options)
-    town.name = "placeable_town";
+    town.name = spot_name;
     town.userData.spot_id = spot_id;
     this.scene.add(town);
     
     // add event listener - forse mi basta farlo una volta?
-    mmi.addHandler("placeable_town", "click", callbackOnSelection);
+    mmi.addHandler(spot_name, "click", callbackOnSelection);
 
     // add animations
     const scaleKF = new THREE.VectorKeyframeTrack(
@@ -153,7 +152,7 @@ export class SceneHandler {
 
   showAvailableSpots = (spots, callbackOnSelection) => {
     for (let spot of spots) {
-      this.spawnPlaceableTown(spot, callbackOnSelection);
+      this.spawnPlaceableTown(spot, 'placeable_town', callbackOnSelection);
     }
   };
 
@@ -163,7 +162,14 @@ export class SceneHandler {
     }
   };
 
+  showAvailableHarvestSpots = (spots, callbackOnSelection) => {
+    for (let spot of spots) {
+      this.spawnPlaceableTown(spot, 'eg_harvest_spot', callbackOnSelection);
+    }
+  };
+
   removeFromSceneByName = (name) => {
+    mmi.removeHandler(name, "click");
     this.scene.getObjectsByProperty("name", name).forEach((el, index) => {
       this.scene.remove(el);
     });
