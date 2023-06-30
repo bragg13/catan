@@ -21,9 +21,11 @@ const io = new Server(server, {
     }
 })
 
+const port = process.env.PORT || 4000
+
 io.on('connection', socket => onConnection(socket))
 
-server.listen(4000, () => console.log('Server is running on port 4000'));
+server.listen(port, () => console.log('Server is running on port 4000'));
 
 export {
     io,
