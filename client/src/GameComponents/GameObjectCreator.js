@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { loadModel } from "../helpers/model_loader";
 import { hexCoords, roadCoords } from "../assets/coords";
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
 import { gsap } from "gsap";
 
 export class GameObjectCreator {
@@ -40,11 +40,11 @@ export class GameObjectCreator {
     // assigning models
     let currentResource = "";
     let currentValue = "";
-    
+
     let index = 0;
     for (let el of board) {
-      coords.x = hexCoords[el.id].x
-      coords.z = hexCoords[el.id].z
+      coords.x = hexCoords[el.id].x;
+      coords.z = hexCoords[el.id].z;
 
       // tile
       currentResource = board[index].resource;
@@ -67,7 +67,7 @@ export class GameObjectCreator {
             });
           },
         });
-        
+
         // scale animation
         gsap.to(model.scale, {
           duration: 0.5,
@@ -76,7 +76,7 @@ export class GameObjectCreator {
           z: "+=0.2",
           onComplete: () => {
             gsap.to(model.scale, {
-              duration: 0.5, 
+              duration: 0.5,
               x: "-=0.2",
               y: "-=0.2",
               z: "-=0.2",
@@ -90,9 +90,14 @@ export class GameObjectCreator {
       if (currentValue !== "num_7") {
         let text = this.loadedModels[currentValue].clone();
 
-        text.name = "value_text";        
+        text.name = "value_text";
         text.scale.set(0.3, 0.3, 0.3);
-        text.material = new THREE.MeshPhongMaterial({ color: (currentValue==='num_8' || currentValue==='num_6') ? 0xff0000 : 0xdddddd })
+        text.material = new THREE.MeshPhongMaterial({
+          color:
+            currentValue === "num_8" || currentValue === "num_6"
+              ? 0xff0000
+              : 0xdddddd,
+        });
         text.castShadow = true;
         text.receiveShadow = true;
 
@@ -109,30 +114,31 @@ export class GameObjectCreator {
         // make the text always rotate on its y axis
         text.position.set(0, 0.4, 0);
         model.add(text);
-        
       }
 
       tiles.push(model);
       index++;
-    };
+    }
 
     return tiles;
   };
 
-  createTown = (x, y, z, options, placeable=false) => {
+  createTown = (x, y, z, options, placeable = false) => {
     let objGeo = new THREE.SphereGeometry(0.1);
     let objMat = new THREE.MeshPhongMaterial(options);
     let sphere = new THREE.Mesh(objGeo, objMat);
-    sphere.position.set(x, y, z);
+    const placeableOffset = (placeable ? 0 : 1)
+    sphere.position.set(x, y + placeableOffset, z);
 
-    if(placeable) {
+    // placeable animation
+    if (placeable) {
       gsap.to(sphere.scale, {
         duration: 2,
         x: 1.1,
         y: 1.1,
         z: 1.1,
         yoyo: true,
-        repeat: -1
+        repeat: -1,
       });
 
       gsap.to(sphere.material, {
@@ -140,33 +146,43 @@ export class GameObjectCreator {
         opacity: "+=0.3",
         yoyo: true,
         repeat: -1,
-        });
-
+      });
+    } else {
+      // drop down animation
+      gsap.to(sphere.position, {
+        duration: 0.5,
+        y: `-=${placeableOffset}`,
+      });
     }
 
-    return sphere
+    return sphere;
   };
 
-  createRoad = (x, y, z, yangle, options, placeable=false) => {
+  createRoad = (x, y, z, yangle, options, placeable = false) => {
     let objGeo = new THREE.BoxGeometry(1, 1, 1);
     let objMat = new THREE.MeshPhongMaterial(options);
     let road = new THREE.Mesh(objGeo, objMat);
 
-    road.position.set(x, y, z);
+    const placeableOffset = (placeable ? 0 : 1)
+    road.position.set(x, y+placeableOffset, z);
     road.rotation.set(0, yangle, 0);
     road.scale.set(0.12, 0.18, 0.45);
-    
-    if(placeable) {
+
+    if (placeable) {
       gsap.to(road.material, {
         duration: 1,
         opacity: "+=0.5",
         yoyo: true,
         repeat: -1,
-        });
+      });
+    } else {
+      // drop down animation
+      gsap.to(road.position, {
+        duration: 0.5,
+        y: `-=${placeableOffset}`,
+      });
     }
 
-
-    return road
-  }
-
+    return road;
+  };
 }
