@@ -79,3 +79,36 @@ export const townHarvest = {
   53: [18],
   54: [19],
 };
+
+export const deck = [
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "knight",
+  "monopoly",
+  "monopoly",
+  "road_building",
+  "road_building",
+  "year_of_plenty",
+  "year_of_plenty",
+  "victory_point",
+  "victory_point",
+  "victory_point",
+  "victory_point",
+  "victory_point",
+];
+
+export const awards = [
+  "longest_road",
+  "largest_army"
+]

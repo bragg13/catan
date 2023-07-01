@@ -119,7 +119,11 @@ Player: {
 {
     msg: "gameInitialised",
     board: Board,
-    turn: TurnSystem,
+    turn: {
+        player: PlayerID,
+        action: TurnAction,
+        round: Number
+    },
     players: Players
 }
 ```
@@ -131,7 +135,11 @@ Player: {
     availableSpots?: Array of SpotID,
     availableRoads?: Array of RoadID,
     availableHarvestSpots?: Array of SpotID,
-    turn: TurnSystem,
+    turn: {
+        player: PlayerID,
+        action: TurnAction,
+        round: Number
+    },
     players: Players,
     updatedBoard: {
         msg: 'newRoad' | 'newTown',

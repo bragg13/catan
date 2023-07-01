@@ -75,17 +75,20 @@ export class Room {
         if (this.playersReady.length === this.players.length) {
           this.playersReady.length = 0;
           this.gameStatus = "game";
-          this.handleGame();
+          this.handleGame(playerUpdate);
         }
         break;
 
       case "selectedTown":
-        this.game.selectedTown(playerUpdate.updateData.selectedTown, playerUpdate.from);
+        this.game.selectedTown(
+          playerUpdate.updateData.selectedTown,
+          playerUpdate.from
+        );
         this.handleEarlyGame({
           msg: "newTown",
           updatedBy: playerUpdate.from,
           town: playerUpdate.updateData.selectedTown,
-          road: null
+          road: null,
         });
         break;
 
@@ -93,12 +96,15 @@ export class Room {
         console.log(
           `[SERVER] Room - Player ${playerUpdate.from} has selected a road`
         );
-        this.game.selectedRoad(playerUpdate.updateData.selectedRoad, playerUpdate.from);
+        this.game.selectedRoad(
+          playerUpdate.updateData.selectedRoad,
+          playerUpdate.from
+        );
         this.handleEarlyGame({
           msg: "newRoad",
           updatedBy: playerUpdate.from,
           road: playerUpdate.updateData.selectedRoad,
-          town: null
+          town: null,
         });
         break;
 
@@ -117,8 +123,11 @@ export class Room {
         console.log(
           `[SERVER] Room - Player ${playerUpdate.from} has rolled the dice`
         );
-        this.game.diceRolled(playerUpdate.from, playerUpdate.updateData.diceValue);
-        this.handleGame();
+        this.game.diceRolled(
+          playerUpdate.from,
+          playerUpdate.updateData.diceValue
+        );
+        this.handleGame(playerUpdate);
         break;
 
       case "turnDone":
@@ -132,12 +141,33 @@ export class Room {
   };
 
   handleGame = (updateData) => {
-    console.log("game actaully started");
+    console.log("[SERVER] Room - sending game update");
+
+    // dont increase turn id it is just another action from the same player
+    let turnData =
+      updateData.msg === "turnDone"
+        ? this.game.turnSystem.nextTurn()
+        : this.game.turnSystem.getTurnData();
+    console.log("turnData", turnData);
+
+    // list of actions the player can do
+    let availableActions =
+      updateData.msg === "turnDone"
+        ? ["diceRoll"]
+        : this.game.getAvailableActions(turnData.player);
+
+      // send update to players
+      io.to(this.id).emit("gameUpdate", {
+        turn: turnData,
+        availableActions: availableActions,
+        players: this.game.players,
+        updatedBoard: { ...updateData },
+      });
   };
 
   handleEarlyGame = (additionalUpdateData = null) => {
     console.log("[SERVER] Room - sending early game update");
-    console.log('additionalUpdateData', additionalUpdateData)
+    console.log("additionalUpdateData", additionalUpdateData);
     let turnData = this.game.turnSystem.nextInitialTurn();
 
     // if early game is over

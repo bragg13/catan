@@ -17,9 +17,29 @@ export class TurnSystem {
 
   nextTurn = () => {
     console.log("normal turn");
+    
+    // di chi è il turno ora
+    this.player = this.playerOrder[this.playerOrderIndex];
+
+    // turno di early game - finito
+    this.playerOrderIndex++;
+
+    if (this.playerOrderIndex === this.playerOrder.length)
+      this.playerOrderIndex = 0;
+
     return {
-      isInitialTurn
+        player: this.player,
+        action: this.action,
+        round: this.round
     }
+  };
+
+  getTurnData = () => {
+    return {
+      player: this.player,
+      action: this.action,
+      round: this.round
+  }
   };
 
   nextInitialTurn = () => {
@@ -28,8 +48,12 @@ export class TurnSystem {
 
     // to handle the GUI
     if (this.earlyGameSteps[this.player] === 5) {
+      // starts the game in a way
       this.round = 0
+      this.action = 'diceRoll'
       return {
+        player: this.player,
+        action: this.action,
         round: this.round
       }
     }
@@ -69,6 +93,10 @@ export class TurnSystem {
 
     } 
 
-    return this;
+    return {
+      player: this.player,
+      action: this.action,
+      round: this.round
+  };
   };
 }

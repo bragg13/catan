@@ -1,11 +1,12 @@
 import { Board } from "./Board.js"
 import { TurnSystem } from "./TurnSystem.js"
-import { townHarvest } from "./helpers/constants.js"
+import { townHarvest, deck, awards } from "./helpers/constants.js"
 
 export class Game {
     constructor(id, players) {
         this.roomId = id
         this.players = {}
+        this.deck = deck.sort(() => Math.random() - 0.5)
         
         for (let player of players) {
             this.players[player.id] = {     // TODO: replace with Player object
@@ -44,6 +45,45 @@ export class Game {
         }
     }
 
+    getAvailableActions = (player_id) => {
+        let availableActions = []
+        let player = this.players[player_id]
+        let playerInventory = player.inventory
+
+        // === CRAFTING ===
+        let availableSpotsTown = this.getAvailableSpots(player_id)
+        let availableRoads = this.getAvailableSpots(player_id)
+        let availableSpotsCity = this.getAvailableHarvestSpots(player_id)
+        
+        // check if player can afford town
+        if (playerInventory.wood >= 1 && playerInventory.clay >= 1 && playerInventory.sheep >= 1 && playerInventory.wheat >= 1) {
+            if (availableSpotsTown.length > 0)
+                availableActions.push('town')
+        }
+
+        // check if player can afford city
+        if (playerInventory.rocks >= 3 && playerInventory.wheat >= 2) {
+            if (availableSpotsCity.length > 0)
+                availableActions.push('city')
+        }
+
+        // check if player can afford road
+        if (playerInventory.wood >= 1 && playerInventory.clay >= 1) {
+            if (availableRoads.length > 0)          // useless?
+                availableActions.push('road')
+        }
+
+        // check if player can afford dev card
+        if (playerInventory.sheep >= 1 && playerInventory.wheat >= 1 && playerInventory.rocks >= 1) {
+            availableActions.push('dev')
+        }
+
+        // === DEV CARDS ===
+        if (player.dev.length > 0) {
+            availableActions.push('playDev')
+        }
+    }
+
     // harvest is handled here
     // should work on temp arrays TODO GENERALLY
     diceRolled = (diceValue) => {
@@ -79,6 +119,11 @@ export class Game {
     }
     getAvailableHarvestSpots = (player_id) => {
         return this.players[player_id].towns;
+    }
+    pickDevCard = (player_id) => {
+        // pick a random card from the deck
+        let card = this.deck.pop()
+        this.players[player_id].dev.push(card)
     }
 
     // when a player selects a spot/road/harvest spot (on early game)

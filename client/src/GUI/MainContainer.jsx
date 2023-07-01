@@ -107,7 +107,11 @@ export default function MainContainer({
         <Players players={players} currentPlayer={currentPlayer} />
         <Dice
           handleDiceRoll={handleDiceRoll}
-          isEnabled={turn === null ? false : turn.id === currentPlayer.id}
+          isEnabled={
+            currentPlayer !== null &&
+            currentPlayer.availableActions !== null &&
+            currentPlayer.availableActions[0] === "diceRoll"
+          }
         />
         <PassTurn
           handlePassTurn={handlePassTurn}

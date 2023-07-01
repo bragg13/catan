@@ -28,8 +28,9 @@ export class World {
     // orientate the camera
     this.camera.position.set(0, 3, 2);
     this.camera.lookAt(0, 0, 0);
-    const controls = new OrbitControls(this.camera, this.renderer.domElement);
 
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    
     // server handler
     serverHandler = new ServerHandler(socket);
   }
@@ -112,6 +113,11 @@ export class World {
       );
     }
   };
+
+
+  handleGame = (player, serverData) => {
+    console.log('handleGame', player, serverData)
+  }
 
   updateScene = (updateData) => {
     console.log(updateData);

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { World } from "../GameComponents/World";
 import { useLocation } from "react-router-dom";
 import { MainContainer } from "../GUI";
+import { Button } from "@mui/material";
+import { inventory } from "../helpers/GUI_helpers";
 
 export default function PlayPage({ socket }) {
   const world = useRef(null);
@@ -10,6 +12,7 @@ export default function PlayPage({ socket }) {
   const [players, setPlayers] = useState([]);
   const [currentPlayer, setCurrentPlayer] = useState(null);
   const [turn, setTurn] = useState(null);
+  const [availableActions, setAvailableActions] = useState([]);
 
   useEffect(() => {
     const initialGameState = location.state.initialGameState;
@@ -23,7 +26,7 @@ export default function PlayPage({ socket }) {
     setTurn(initialGameState.turn);
     setCurrentPlayer(initialGameState.players[socket.id]);
     setLoaded(true);
-  }, []);
+  }, [location.state.initialGameState, socket]);
 
   // listen to server updates
   useEffect(() => {
@@ -31,12 +34,13 @@ export default function PlayPage({ socket }) {
       socket.on("earlyGameUpdate", (updateData) =>
         processEarlyGameUpdate(updateData)
       );
-      socket.on("serverUpdate", (updateData) => processGameUpdate(updateData));
+      socket.on("gameUpdate", (updateData) => processGameUpdate(updateData));
     }
   }, [socket, loaded]);
 
   const processEarlyGameUpdate = (gameUpdate) => {
-    console.log('gameUpdate', gameUpdate)
+    console.log("gameUpdate", gameUpdate);
+
     // update the board
     world.current.updateScene({
       ...gameUpdate.updatedBoard,
@@ -52,15 +56,41 @@ export default function PlayPage({ socket }) {
     });
 
     // play the turn (if it is mine)
-    if (gameUpdate.turn.player === socket.id) {
-      world.current.handleEarlyGame(currentPlayer, {...gameUpdate});
+    if (gameUpdate.turn.player === socket.id && gameUpdate.turn.round !== 0) {
+      world.current.handleEarlyGame(currentPlayer, { ...gameUpdate });
     }
   };
 
   const processGameUpdate = (gameUpdate) => {
     console.log(gameUpdate);
 
-    world.current.updateScene(...gameUpdate.updatedBoard);
+    // update the board
+    world.current.updateScene({ ...gameUpdate.updatedBoard });
+
+    // update the GUI - TODO: might just use setState
+    setTurn(gameUpdate.turn);
+    setPlayers((prevPlayers) => {
+      return { ...prevPlayers, ...gameUpdate.players };
+    });
+    setCurrentPlayer((prevPlayer) => {
+      return {
+        ...prevPlayer,
+        ...gameUpdate.players[socket.id],
+        inventory: {
+          ...gameUpdate.players[socket.id].inventory,
+        },
+      };
+    });
+    setAvailableActions((prevActions) => {
+      return [...prevActions, ...gameUpdate.availableActions];
+    });
+
+    console.log("currentPlayer", currentPlayer);
+
+    // play the turn (if it is mine)
+    if (gameUpdate.turn.player === socket.id) {
+      world.current.handleGame(currentPlayer, { ...gameUpdate });
+    }
   };
 
   const handleCrafting = () => {
@@ -83,7 +113,10 @@ export default function PlayPage({ socket }) {
         handleDiceRoll={handleDiceRoll}
         handlePassTurn={handlePassTurn}
         players={players}
-        currentPlayer={currentPlayer}
+        currentPlayer={{
+          ...currentPlayer, 
+          availableActions: (availableActions.length > 0 ? availableActions : null)
+        }}
         turn={turn}
       />
     </div>

@@ -4,7 +4,7 @@ import './GUIStyle.css'
 
 export default function Dice({handleDiceRoll, isEnabled}) {
   return (
-    <div className={`Dice-div ${isEnabled && ".GUI-disabled"}`}
+    <div className={`Dice-div ${isEnabled ? ".Dice-animate" : ".GUI-disabled" } `}
     onClick={isEnabled ? handleDiceRoll : null}
     
     >

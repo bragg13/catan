@@ -1,14 +1,11 @@
 import * as THREE from "three";
-import { loadModel } from "../helpers/model_loader.js";
 import {
-  hexCoords,
   roadCoords,
   spotCoords,
   townHarvest,
 } from "../assets/coords.js";
 import { mmi } from "./World.js";
 import { GameObjectCreator } from "./GameObjectCreator.js";
-import { gsap } from "gsap";
 
 // export const updatables = [];
 export class SceneHandler {

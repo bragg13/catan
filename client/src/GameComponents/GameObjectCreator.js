@@ -1,8 +1,6 @@
 import * as THREE from "three";
 import { loadModel } from "../helpers/model_loader";
-import { hexCoords, roadCoords } from "../assets/coords";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js";
+import { hexCoords } from "../assets/coords";
 import { gsap } from "gsap";
 
 export class GameObjectCreator {
@@ -23,7 +21,6 @@ export class GameObjectCreator {
     let model = null;
     let tiles = [];
     let coords = {};
-    let text = null;
 
     // loading models - hex resources
     for (let m of ["sheep", "wood", "wheat", "clay", "rocks", "bandits"]) {

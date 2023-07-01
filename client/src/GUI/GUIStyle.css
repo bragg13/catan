@@ -8,6 +8,19 @@
     }
 }
 
+/* infinite animation of dices changing scale */
+@keyframes bounce {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 /* === ICONS === */
 .IconGUI-big {
     font-size: 6vmin !important
@@ -37,6 +50,10 @@
     bottom: 3%;
 }
 
+.Dice-animate {
+    animation: bounce 1s infinite;
+}
+
 /* === PLAYERS === */
 .Players-container {
     padding: 1vmin;
@@ -62,6 +79,14 @@
     z-index: 10;
     height: fit-content;
     width: 15vw;
+}
+.MainMenu-harvest {
+    left: 3vw;
+    top: 3vh;
+    position: absolute;
+    z-index: 10;
+    height: fit-content;
+    width: 10vw;
 }
 
 .MainMenu-container {
