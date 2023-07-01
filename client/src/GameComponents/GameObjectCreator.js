@@ -3,7 +3,7 @@ import { loadModel } from "../helpers/model_loader";
 import { hexCoords, roadCoords } from "../assets/coords";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
-import { updatables } from "./SceneHandler";
+import { gsap } from "gsap";
 
 export class GameObjectCreator {
   constructor() {
@@ -14,13 +14,7 @@ export class GameObjectCreator {
     const sun = new THREE.DirectionalLight(0xffffff, 2);
     sun.position.set(x, y, z);
 
-    // animations
-    // sun.tick = (delta) => {
-    //   if (sun.position.x >= 5) sun.position.x = -5;
-    //   sun.position.x += 0.01 * delta;
-    // };
-
-    // updatables.push(sun);
+    // animation
 
     return sun;
   };
@@ -47,7 +41,6 @@ export class GameObjectCreator {
     let currentResource = "";
     let currentValue = "";
     
-    model = null;
     let index = 0;
     for (let el of board) {
       coords.x = hexCoords[el.id].x
@@ -55,21 +48,63 @@ export class GameObjectCreator {
 
       // tile
       currentResource = board[index].resource;
-      model = this.loadedModels[currentResource].clone();
+      let model = this.loadedModels[currentResource].clone();
       model.position.set(coords.x, 0, coords.z);
       model.receiveShadow = true;
       model.name = `tile_${el.id}`;
 
+      // add tile animation on turn pass, like every hexagon tile rotates 90 degrees tbi
+
+      // add tile harvest animation
+      model.harvestAnim = () => {
+        gsap.to(model.position, {
+          duration: 0.5,
+          y: "+=1",
+          onComplete: () => {
+            gsap.to(model.position, {
+              duration: 0.5,
+              y: "-=1",
+            });
+          },
+        });
+        
+        // scale animation
+        gsap.to(model.scale, {
+          duration: 0.5,
+          x: "+=0.2",
+          y: "+=0.2",
+          z: "+=0.2",
+          onComplete: () => {
+            gsap.to(model.scale, {
+              duration: 0.5, 
+              x: "-=0.2",
+              y: "-=0.2",
+              z: "-=0.2",
+            });
+          },
+        });
+      };
+
       // value text
       currentValue = `num_${board[index].value}`;
       if (currentValue !== "num_7") {
-        text = this.loadedModels[currentValue].clone();
+        let text = this.loadedModels[currentValue].clone();
 
         text.name = "value_text";        
         text.scale.set(0.3, 0.3, 0.3);
         text.material = new THREE.MeshPhongMaterial({ color: (currentValue==='num_8' || currentValue==='num_6') ? 0xff0000 : 0xdddddd })
         text.castShadow = true;
         text.receiveShadow = true;
+
+        // text bouncing animation
+        text.bounceAnim = () => {
+          gsap.to(text.position, {
+            duration: 4,
+            y: "+=0.1",
+            yoyo: true,
+            repeat: -1,
+          });
+        };
 
         // make the text always rotate on its y axis
         text.position.set(0, 0.4, 0);
@@ -84,16 +119,35 @@ export class GameObjectCreator {
     return tiles;
   };
 
-  createTown = (x, y, z, options) => {
+  createTown = (x, y, z, options, placeable=false) => {
     let objGeo = new THREE.SphereGeometry(0.1);
     let objMat = new THREE.MeshPhongMaterial(options);
     let sphere = new THREE.Mesh(objGeo, objMat);
     sphere.position.set(x, y, z);
 
+    if(placeable) {
+      gsap.to(sphere.scale, {
+        duration: 2,
+        x: 1.1,
+        y: 1.1,
+        z: 1.1,
+        yoyo: true,
+        repeat: -1
+      });
+
+      gsap.to(sphere.material, {
+        duration: 2,
+        opacity: "+=0.3",
+        yoyo: true,
+        repeat: -1,
+        });
+
+    }
+
     return sphere
   };
 
-  createRoad = (x, y, z, yangle, options) => {
+  createRoad = (x, y, z, yangle, options, placeable=false) => {
     let objGeo = new THREE.BoxGeometry(1, 1, 1);
     let objMat = new THREE.MeshPhongMaterial(options);
     let road = new THREE.Mesh(objGeo, objMat);
@@ -102,78 +156,17 @@ export class GameObjectCreator {
     road.rotation.set(0, yangle, 0);
     road.scale.set(0.12, 0.18, 0.45);
     
-    // create opacity animation for road (fade in)
-    road.tick = (delta) => {
-      if (road.material.opacity < 1) {
-        road.material.opacity += 0.01 * delta; 
-      }
-    };
+    if(placeable) {
+      gsap.to(road.material, {
+        duration: 1,
+        opacity: "+=0.5",
+        yoyo: true,
+        repeat: -1,
+        });
+    }
 
 
     return road
   }
-
-
-  // async createText(x, y, z, text, color) {
-  //   const fontLoader = new FontLoader();
-
-  //   try {
-  //       let font = fontLoader.load('/fonts/Ysabeau.json', font => {
-  //         console.log('font loaded')
-          
-  //         const textGeometry = new TextGeometry(text, {
-  //           font: font,
-  //           size: 1,
-  //           height: 1,
-  //         });
-
-  //         const textMaterial = new THREE.MeshPhongMaterial({ color: color });
-  //         const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-  //         textMesh.position.set(x, y, z);
-  //         textMesh.castShadow = true;
-  //         textMesh.receiveShadow = true;
-  //         return textMesh;
-  //       })
-  //   } catch (error) {
-  //     console.error('Error loading font or creating text:', error);
-  //     throw error;
-  //   }
-  // }
-  
-  async createText(x, y, z, text, color) {
-    const fontLoader = new FontLoader();
-  
-    try {
-      let fontPromise = new Promise((resolve, reject) => {
-        fontLoader.load('/fonts/Ysabeau.json', font => {
-          console.log('font loaded')
-  
-          const textGeometry = new TextGeometry(text, {
-            font: font,
-            size: 1,
-            height: 1,
-          });
-  
-          const textMaterial = new THREE.MeshPhongMaterial({ color: color });
-          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-  
-          textMesh.position.set(x, y, z);
-          textMesh.castShadow = true;
-          textMesh.receiveShadow = true;
-          console.log('returning tm', textMesh)
-          resolve(textMesh);
-        }, undefined, (error) => {
-          reject(error);
-        });
-      });
-  
-      return await fontPromise;
-    } catch (error) {
-      console.error('Error loading font or creating text:', error);
-      throw error;
-    }
-  }
-  
 
 }

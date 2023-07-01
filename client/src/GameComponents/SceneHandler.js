@@ -10,7 +10,7 @@ import { mmi } from "./World.js";
 import { GameObjectCreator } from "./GameObjectCreator.js";
 import { gsap } from "gsap";
 
-export const updatables = [];
+// export const updatables = [];
 export class SceneHandler {
   constructor(server_info, cameraRef) {
     // const server_board, server_bg, server_players} =
@@ -37,31 +37,10 @@ export class SceneHandler {
   init = async () => {
     this.tiles.add(
       ...(await this.gameObjectCreator.createHexagonBoard(this.board))
-    );
+    );    // do i use this?
 
     this.scene.add(this.tiles);
-    this.scene
-      .getObjectsByProperty("name", "value_text")
-      .forEach((el, index) => {
-        // bouncing animation for el using position.z
-        const bounceKF = new THREE.VectorKeyframeTrack(
-          ".position",
-          [0, 2, 4],
-          [0, 0.4, 0, 0, 0.5, 0, 0, 0.4, 0]
-        );
-        const clip = new THREE.AnimationClip("Action", 4, [bounceKF]);
-        let mixer = new THREE.AnimationMixer(el);
-        const clipAction = mixer.clipAction(clip);
-        clipAction.setLoop();
-        clipAction.play();
-
-        el.tick = (delta) => {
-          mixer.update(delta);
-        };
-
-        updatables.push(el);
-      });
-  };
+  }
 
   getScene = () => {
     return this.scene;
@@ -91,7 +70,7 @@ export class SceneHandler {
     this.scene.add(road);
   };
 
-  spawnPlaceableTown = (spot_id, spot_name, callbackOnSelection) => {
+  spawnPlaceableTown = (spot_id, spot_name) => {
     let coords = spotCoords[spot_id];
     let options = {
       color: 0xffffff,
@@ -103,41 +82,15 @@ export class SceneHandler {
       coords.x,
       coords.y,
       coords.z,
-      options
+      options,
+      true
     );
     town.name = spot_name;
     town.userData.spot_id = spot_id;
     this.scene.add(town);
-
-    // add event listener - forse mi basta farlo una volta?
-    mmi.addHandler(spot_name, "click", callbackOnSelection);
-
-    // add animations
-    const scaleKF = new THREE.VectorKeyframeTrack(
-      ".scale",
-      [0, 1, 2],
-      [1, 1, 1, 1.1, 1.1, 1.1, 1, 1, 1]
-    );
-    const opacityKF = new THREE.VectorKeyframeTrack(
-      ".material.opacity",
-      [0, 1, 2],
-      [0.5, 0.8, 0.5]
-    );
-
-    const clip = new THREE.AnimationClip("Action", 2, [scaleKF, opacityKF]);
-    let mixer = new THREE.AnimationMixer(town);
-    const clipAction = mixer.clipAction(clip);
-    clipAction.setLoop();
-    clipAction.play();
-
-    // TODO: remove from updatables - miht use a temp upadatable arr only for temp animations (to clear danach)
-    town.tick = (delta) => {
-      mixer.update(delta);
-    };
-    updatables.push(town);
   };
 
-  spawnPlaceableRoad = (roadData, callbackOnSelection) => {
+  spawnPlaceableRoad = (roadData) => {
     let coords = roadCoords[roadData.id];
     let options = {
       color: 0xffffff,
@@ -150,86 +103,48 @@ export class SceneHandler {
       coords.y,
       coords.z,
       coords.yangle,
-      options
+      options,
+      true
     );
     road.name = "placeable_road";
     road.userData.roadData = roadData;
     this.scene.add(road);
-
-    // add event listener
-    mmi.addHandler("placeable_road", "click", callbackOnSelection);
-
-    // add animations
-    const opacityKF = new THREE.VectorKeyframeTrack(
-      ".material.opacity",
-      [0, 1, 2],
-      [0.5, 0.8, 0.5]
-    );
-
-    const clip = new THREE.AnimationClip("Action", 2, [opacityKF]);
-    let mixer = new THREE.AnimationMixer(road);
-    const clipAction = mixer.clipAction(clip);
-    clipAction.setLoop();
-    clipAction.play();
-
-    // TODO: remove from updatables - miht use a temp upadatable arr only for temp animations (to clear danach)
-    road.tick = (delta) => {
-      mixer.update(delta);
-    };
-    updatables.push(road);
   };
 
   // just for animation
-  harvest = (spotId, playerId) => {
-    // position animation
+  harvest = (spotId) => {
     for (let tileId of townHarvest[spotId]) {
-      if (tileId === 7) continue;
-
       let tile = this.scene.getObjectByName(`tile_${tileId}`);
-      gsap.to(tile.position, {
-        duration: 0.5, // pick up halfway for a second
-        y: "+=1",
-        onComplete: () => {
-          gsap.to(tile.position, {
-            duration: 0.5, // then fall down for a second, total 2 seconds
-            y: "-=1",
-          });
-        },
-      });
-      
-      // scale animation
-      gsap.to(tile.scale, {
-        duration: 0.5, // scale up halfway for a second
-        x: "+=0.2",
-        y: "+=0.2",
-        z: "+=0.2",
-        onComplete: () => {
-          gsap.to(tile.scale, {
-            duration: 0.5, // scale down for a second, total 2 seconds
-            x: "-=0.2",
-            y: "-=0.2",
-            z: "-=0.2",
-          });
-        },
-      });
+      if (tile.userData.resource !== "bandits") {
+        tile.harvestAnim();
+      }
     }
   };
 
   showAvailableSpots = (spots, callbackOnSelection) => {
+    // add event listener
+    mmi.addHandler('placeable_town', "click", callbackOnSelection);
+
     for (let spot of spots) {
       this.spawnPlaceableTown(spot, "placeable_town", callbackOnSelection);
     }
   };
 
   showAvailableRoads = (roads, callbackOnSelection) => {
+    // add event listener
+    mmi.addHandler("placeable_road", "click", callbackOnSelection);
+
     for (let road of roads) {
-      this.spawnPlaceableRoad(road, callbackOnSelection);
+      this.spawnPlaceableRoad(road);
     }
   };
 
   showAvailableHarvestSpots = (spots, callbackOnSelection) => {
+    // add event listener
+    mmi.addHandler("eg_harvest_spot", "click", callbackOnSelection);
+
     for (let spot of spots) {
-      this.spawnPlaceableTown(spot, "eg_harvest_spot", callbackOnSelection);
+      this.spawnPlaceableTown(spot, "eg_harvest_spot");
     }
   };
 

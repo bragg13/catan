@@ -42,7 +42,6 @@ export class World {
     this.loop = new Loop(this.camera, this.sceneHandler, this.renderer);
 
     // interactions listener
-    // document.addEventListener('keydown', this.handleKeyboard)
     mmi = new MouseMeshInteraction(this.sceneHandler.getScene(), this.camera);
     document.body.appendChild(this.renderer.domElement);
 
