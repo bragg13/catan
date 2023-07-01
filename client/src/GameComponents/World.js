@@ -98,7 +98,10 @@ export class World {
         availableHarvestSpots,
         (mesh) => {
           const selectedSpotId = mesh.userData.spot_id;
+          
+          // update scene
           this.sceneHandler.removeFromSceneByName("eg_harvest_spot");
+          this.sceneHandler.harvest(selectedSpotId, player.id)
 
           // update server
           serverHandler.updateServer("selectedHarvestSpot", {

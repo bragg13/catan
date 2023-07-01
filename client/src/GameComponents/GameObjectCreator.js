@@ -58,6 +58,7 @@ export class GameObjectCreator {
       model = this.loadedModels[currentResource].clone();
       model.position.set(coords.x, 0, coords.z);
       model.receiveShadow = true;
+      model.name = `tile_${el.id}`;
 
       // value text
       currentValue = `num_${board[index].value}`;
