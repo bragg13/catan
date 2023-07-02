@@ -8,19 +8,6 @@
     }
 }
 
-/* infinite animation of dices changing scale */
-@keyframes bounce {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
 /* === ICONS === */
 .IconGUI-big {
     font-size: 6vmin !important
@@ -39,19 +26,6 @@
     z-index: 10;
     right: 3%;
     bottom: 12%;
-}
-
-/* === DICE === */
-.Dice-div {
-    display: flex;
-    position: absolute;
-    z-index: 10;
-    right: 3%;
-    bottom: 3%;
-}
-
-.Dice-animate {
-    animation: bounce 1s infinite;
 }
 
 /* === PLAYERS === */

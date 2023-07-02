@@ -58,7 +58,7 @@ export class Room {
   };
 
   processPlayerUpdate = (playerUpdate) => {
-    console.log(playerUpdate);
+    console.log(`[PlayerUpdate] ${playerUpdate.from}: ${playerUpdate.msg}`);
 
     switch (playerUpdate.msg) {
       case "earlyGameClientReady":
@@ -93,9 +93,6 @@ export class Room {
         break;
 
       case "selectedRoad":
-        console.log(
-          `[SERVER] Room - Player ${playerUpdate.from} has selected a road`
-        );
         this.game.selectedRoad(
           playerUpdate.updateData.selectedRoad,
           playerUpdate.from
@@ -109,9 +106,6 @@ export class Room {
         break;
 
       case "selectedHarvestSpot":
-        console.log(
-          `[SERVER] Room - Player ${playerUpdate.from} has selected a harvest spot`
-        );
         this.game.selectedHarvestSpot(
           playerUpdate.updateData.selectedHarvestSpot,
           playerUpdate.from
@@ -120,9 +114,6 @@ export class Room {
         break;
 
       case "diceRolled":
-        console.log(
-          `[SERVER] Room - Player ${playerUpdate.from} has rolled the dice`
-        );
         this.game.diceRolled(
           playerUpdate.from,
           playerUpdate.updateData.diceValue
@@ -131,7 +122,6 @@ export class Room {
         break;
 
       case "turnDone":
-        console.log("[SERVER] Room - turn done");
         this.handleGame(playerUpdate);
         break;
 
@@ -141,50 +131,51 @@ export class Room {
   };
 
   handleGame = (updateData) => {
-    console.log("[SERVER] Room - sending game update");
-
     // dont increase turn id it is just another action from the same player
     let turnData =
-      updateData.msg === "turnDone"
+      updateData.msg === "turnDone" || updateData.msg === "clientReady"
         ? this.game.turnSystem.nextTurn()
         : this.game.turnSystem.getTurnData();
     console.log("turnData", turnData);
 
     // list of actions the player can do
     let availableActions =
-      updateData.msg === "turnDone"
+    updateData.msg === "turnDone" || updateData.msg === "clientReady"
         ? ["diceRoll"]
         : this.game.getAvailableActions(turnData.player);
 
       // send update to players
-      io.to(this.id).emit("gameUpdate", {
+      const gameUpdate = {
         turn: turnData,
         availableActions: availableActions,
         players: this.game.players,
         updatedBoard: { ...updateData },
-      });
+      }
+
+      io.to(this.id).emit("gameUpdate", gameUpdate);
+
+      console.log("[Game] Sent this update: ", gameUpdate);
+
   };
 
   handleEarlyGame = (additionalUpdateData = null) => {
-    console.log("[SERVER] Room - sending early game update");
-    console.log("additionalUpdateData", additionalUpdateData);
     let turnData = this.game.turnSystem.nextInitialTurn();
+    let gameUpdate = {}
 
     // if early game is over
     if (turnData.round === 0) {
       // send last early game update (last player's inventory)
-      io.to(this.id).emit("earlyGameUpdate", {
+      gameUpdate = {
         availableSpots: null,
         availableRoads: null,
         availableHarvestSpots: null,
         turn: turnData,
         players: this.game.players,
         updatedBoard: { ...additionalUpdateData },
-      });
-    }
-
-    // else send update to players
-    else {
+      }
+    
+    } else {
+      // else send update to players
       let availableRoads = null,
         availableSpots = null,
         availableHarvestSpots = null;
@@ -200,14 +191,18 @@ export class Room {
       }
 
       // send update to players
-      io.to(this.id).emit("earlyGameUpdate", {
+      gameUpdate = {
         availableSpots,
         availableRoads,
         availableHarvestSpots,
         turn: turnData,
         players: this.game.players,
         updatedBoard: { ...additionalUpdateData },
-      });
+      };
     }
+
+    io.to(this.id).emit("earlyGameUpdate", gameUpdate);
+    console.log("[EGame] Sent this update: ", gameUpdate);
+
   };
 }

@@ -1,0 +1,32 @@
+/* style.css */
+
+@keyframes yoyo {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+    
+.svg-icon {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.35s ease-in-out;
+    /* font-size: 6vmin !important */
+}
+    
+.Dice-animate {
+animation: yoyo 1s infinite alternate;
+}
+    
+
+/* === DICE === */
+.Dice-div {
+    display: flex;
+    position: absolute;
+    z-index: 10;
+    right: 3%;
+    bottom: 3%;
+}

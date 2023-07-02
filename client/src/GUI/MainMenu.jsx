@@ -21,14 +21,10 @@ export default function MainMenu({ currentPlayer, handleCrafting }) {
   useEffect(() => {
     // on component mount, update the news
     let newItems = {};
+    console.log(currentPlayer)
 
-    if (currentPlayer !== null && oldPlayer.current !== null) {
+    if (currentPlayer.hasOwnProperty('inventory') && oldPlayer.current.hasOwnProperty('inventory')) {
       for (let item of Object.keys(currentPlayer.inventory)) {
-        console.log(
-          item,
-          currentPlayer.inventory[item],
-          oldPlayer.current.inventory[item]
-        );
         if (
           currentPlayer.inventory[item] !== oldPlayer.current.inventory[item]
         ) {

@@ -113,10 +113,16 @@ export default function PlayPage({ socket }) {
         handleDiceRoll={handleDiceRoll}
         handlePassTurn={handlePassTurn}
         players={players}
-        currentPlayer={{
-          ...currentPlayer, 
-          availableActions: (availableActions.length > 0 ? availableActions : null)
-        }}
+        currentPlayer={
+          availableActions.length > 0
+            ? {
+                ...currentPlayer,
+                availableActions: availableActions,
+              }
+            : {
+                ...currentPlayer
+              }
+        }
         turn={turn}
       />
     </div>

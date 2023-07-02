@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Box, Slide, Snackbar, Typography } from "@mui/material";
-import { Dice, MainMenu, Players, PassTurn } from ".";
+import { MainMenu, Players, PassTurn, DiceContainer } from ".";
 
 export default function MainContainer({
   handleCrafting,
@@ -105,13 +105,9 @@ export default function MainContainer({
           handleCrafting={handleCrafting}
         />
         <Players players={players} currentPlayer={currentPlayer} />
-        <Dice
+        <DiceContainer
           handleDiceRoll={handleDiceRoll}
-          isEnabled={
-            currentPlayer !== null &&
-            currentPlayer.availableActions !== null &&
-            currentPlayer.availableActions[0] === "diceRoll"
-          }
+          currentPlayer={currentPlayer}
         />
         <PassTurn
           handlePassTurn={handlePassTurn}
