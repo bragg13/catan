@@ -9,13 +9,7 @@ import Dice4 from './src/Dice4.svg';
 import Dice5 from './src/Dice5.svg';
 import Dice6 from './src/Dice6.svg';
 
-export default function Dice ({value}) { // For simplicity, I'll assume that value prop is always between 1 and 6
-  const [animate, setAnimate] = useState(true);
-
-  const handleClick = () => {
-    setAnimate(false);
-  }
-
+export default function Dice ({isEnabled, value}) { // For simplicity, I'll assume that value prop is always between 1 and 6
   /* Map value prop to corresponding SVG. */
   function diceFace(value) {
     switch(value){
@@ -39,9 +33,8 @@ export default function Dice ({value}) { // For simplicity, I'll assume that val
   return (
     <img
       src={diceFace(value)}
-      className={`svg-icon ${animate ? 'Animated' : ''}`}
+      className={`svg-icon ${isEnabled ? 'Dice-animate' : ''}`}
       alt="dice face"
-      onClick={handleClick}
     />
   );
 }

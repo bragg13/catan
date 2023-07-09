@@ -95,8 +95,9 @@ export default function PlayPage({ socket }) {
     world.current.handleCrafting();
   };
 
-  const handleDiceRoll = () => {
+  const handleDiceRoll = (value1, value2) => {
     world.current.handleDiceRoll();
+    console.log("dicerolled", value1, value2)
   };
 
   const handlePassTurn = () => {

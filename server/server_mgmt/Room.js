@@ -153,7 +153,7 @@ export class Room {
         turn: turnData,
         availableActions: availableActions,
         players: this.game.players,
-        updatedBoard: [...updateData],
+        updatedBoard: [{...updateData}]   // to be changed
       }
 
       io.to(this.id).emit("gameUpdate", gameUpdate);

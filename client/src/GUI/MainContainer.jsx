@@ -45,7 +45,7 @@ export default function MainContainer({
       case "road_2":
         msg += `È tempo di realizzare la tua seconda strada!`;
         break;
-      case "dice":
+      case "diceRoll":
         msg += `Tira i dadi!`;
         break;
       case "robber":

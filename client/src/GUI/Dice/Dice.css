@@ -18,7 +18,7 @@
 }
     
 .Dice-animate {
-animation: yoyo 1s infinite alternate;
+animation: yoyo 2s infinite alternate ease-in-out;
 }
     
 
