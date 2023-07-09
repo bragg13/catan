@@ -4,6 +4,7 @@ import MouseMeshInteraction from "../helpers/MouseMeshInteraction.js";
 import { ServerHandler } from "./ServerHandler.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Loop } from "../helpers/Loop.js";
+export const debug = true;
 
 let mmi;
 let serverHandler;
@@ -121,17 +122,19 @@ export class World {
 
   updateScene = (updateData) => {
     console.log(updateData);
-    switch (updateData.msg) {
-      case "newTown":
-        this.sceneHandler.spawnTown(updateData.town, updateData.updatedBy);
-        break;
+    for (let update of updateData) {
+      switch (update.msg) {
+        case "newTown":
+          this.sceneHandler.spawnTown(update.town, update.updatedBy);
+          break;
 
-      case "newRoad":
-        this.sceneHandler.spawnRoad(updateData.road.id, updateData.updatedBy);
-        break;
+        case "newRoad":
+          this.sceneHandler.spawnRoad(update.road.id, update.updatedBy);
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   };
 

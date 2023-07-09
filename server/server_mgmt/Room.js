@@ -1,5 +1,5 @@
 import { Game } from "../game_mgmt/Game.js";
-import { io } from "../index.js";
+import { debug, io } from "../index.js";
 
 export class Room {
   constructor(id, maxPlayers) {
@@ -66,7 +66,11 @@ export class Room {
         if (this.playersReady.length === this.players.length) {
           this.playersReady.length = 0;
           this.gameStatus = "earlyGame";
-          this.handleEarlyGame();
+          if (debug) {
+            this.handleEarlyGame(this.game.generateInitialDebugData());
+          } else {
+            this.handleEarlyGame();
+          }
         }
         break;
 
@@ -84,12 +88,12 @@ export class Room {
           playerUpdate.updateData.selectedTown,
           playerUpdate.from
         );
-        this.handleEarlyGame({
+        this.handleEarlyGame([{
           msg: "newTown",
           updatedBy: playerUpdate.from,
           town: playerUpdate.updateData.selectedTown,
           road: null,
-        });
+        }]);
         break;
 
       case "selectedRoad":
@@ -97,12 +101,12 @@ export class Room {
           playerUpdate.updateData.selectedRoad,
           playerUpdate.from
         );
-        this.handleEarlyGame({
+        this.handleEarlyGame([{
           msg: "newRoad",
           updatedBy: playerUpdate.from,
           road: playerUpdate.updateData.selectedRoad,
           town: null,
-        });
+        }]);
         break;
 
       case "selectedHarvestSpot":
@@ -149,7 +153,7 @@ export class Room {
         turn: turnData,
         availableActions: availableActions,
         players: this.game.players,
-        updatedBoard: { ...updateData },
+        updatedBoard: [...updateData],
       }
 
       io.to(this.id).emit("gameUpdate", gameUpdate);
@@ -171,7 +175,7 @@ export class Room {
         availableHarvestSpots: null,
         turn: turnData,
         players: this.game.players,
-        updatedBoard: { ...additionalUpdateData },
+        updatedBoard: additionalUpdateData!==null ? [...additionalUpdateData] : [],   // posso metterlo nei parametri
       }
     
     } else {
@@ -197,7 +201,7 @@ export class Room {
         availableHarvestSpots,
         turn: turnData,
         players: this.game.players,
-        updatedBoard: { ...additionalUpdateData },
+        updatedBoard: additionalUpdateData!==null ? [...additionalUpdateData] : [],
       };
     }
 

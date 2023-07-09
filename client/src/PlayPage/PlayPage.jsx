@@ -39,12 +39,10 @@ export default function PlayPage({ socket }) {
   }, [socket, loaded]);
 
   const processEarlyGameUpdate = (gameUpdate) => {
-    console.log("gameUpdate", gameUpdate);
+    console.log("(early) gameUpdate", gameUpdate);
 
     // update the board
-    world.current.updateScene({
-      ...gameUpdate.updatedBoard,
-    });
+    world.current.updateScene([...gameUpdate.updatedBoard]);
 
     // update the GUI - TODO: might just use setState
     setTurn(gameUpdate.turn);
@@ -65,7 +63,7 @@ export default function PlayPage({ socket }) {
     console.log(gameUpdate);
 
     // update the board
-    world.current.updateScene({ ...gameUpdate.updatedBoard });
+    world.current.updateScene([...gameUpdate.updatedBoard]);
 
     // update the GUI - TODO: might just use setState
     setTurn(gameUpdate.turn);
@@ -120,7 +118,7 @@ export default function PlayPage({ socket }) {
                 availableActions: availableActions,
               }
             : {
-                ...currentPlayer
+                ...currentPlayer,
               }
         }
         turn={turn}

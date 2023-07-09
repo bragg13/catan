@@ -1,3 +1,5 @@
+import { debug } from "../index.js";
+
 export class TurnSystem {
   constructor(players) {
     this.playerOrder = Object.keys(players);
@@ -6,8 +8,8 @@ export class TurnSystem {
 
     this.action = null;
     this.earlyGameSteps = {
-      [this.playerOrder[0]]: 0,
-      [this.playerOrder[1]]: 0,
+      [this.playerOrder[0]]: (debug) ? 4 : 0,
+      [this.playerOrder[1]]: (debug) ? 4 : 0,
       // [players[2].id]: 0,
       // [players[3].id]: 0,
     };

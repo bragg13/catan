@@ -21,7 +21,7 @@ export default function MainMenu({ currentPlayer, handleCrafting }) {
   useEffect(() => {
     // on component mount, update the news
     let newItems = {};
-    console.log(currentPlayer)
+    // console.log(currentPlayer)
 
     if (currentPlayer.hasOwnProperty('inventory') && oldPlayer.current.hasOwnProperty('inventory')) {
       for (let item of Object.keys(currentPlayer.inventory)) {

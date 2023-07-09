@@ -68,6 +68,7 @@ export default function LoginPage({ socket }) {
           <Button
             type="submit"
             fullWidth
+            id='play'
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >

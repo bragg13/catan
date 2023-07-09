@@ -3,6 +3,7 @@ import http from 'http'
 import cors from 'cors'
 import { Server } from "socket.io"
 import { onConnection } from "./server_mgmt/socketManagement.js"
+export const debug = true
 
 const app = express()
 app.use(cors());
