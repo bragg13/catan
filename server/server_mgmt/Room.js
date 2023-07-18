@@ -118,11 +118,11 @@ export class Room {
         break;
 
       case "diceRolled":
-        const tileToBeHarvested = this.game.diceRolled(
+        const tilesToBeHarvested = this.game.diceRolled(
           playerUpdate.from,
           playerUpdate.updateData.dice
         );
-        this.handleGame({...playerUpdate, ...tileToBeHarvested});
+        this.handleGame({ ...playerUpdate, tilesToBeHarvested: [...tilesToBeHarvested] });
         break;
 
       case "turnDone":
@@ -143,21 +143,21 @@ export class Room {
 
     // list of actions the player can do
     let availableActions =
-    updateData.msg === "turnDone" || updateData.msg === "clientReady"
+      updateData.msg === "turnDone" || updateData.msg === "clientReady"
         ? ["diceRoll"]
         : this.game.getAvailableActions(turnData.player);
 
-      // send update to players
-      const gameUpdate = {
-        turn: turnData,
-        availableActions: availableActions,
-        players: this.game.players,
-        updatedBoard: [{...updateData}]   // to be changed
-      }
+    // send update to players
+    const gameUpdate = {
+      turn: turnData,
+      availableActions: availableActions,
+      players: this.game.players,
+      updatedBoard: [{ ...updateData }]   // to be changed
+    }
 
-      io.to(this.id).emit("gameUpdate", gameUpdate);
+    io.to(this.id).emit("gameUpdate", gameUpdate);
 
-      console.log("[Game] Server sent this update: ", gameUpdate);
+    console.log("[Game] Server sent this update: ", gameUpdate);
 
   };
 
@@ -174,9 +174,9 @@ export class Room {
         availableHarvestSpots: null,
         turn: turnData,
         players: this.game.players,
-        updatedBoard: additionalUpdateData!==null ? [...additionalUpdateData] : [],   // posso metterlo nei parametri
+        updatedBoard: additionalUpdateData !== null ? [...additionalUpdateData] : [],   // posso metterlo nei parametri
       }
-    
+
     } else {
       // else send update to players
       let availableRoads = null,
@@ -200,7 +200,7 @@ export class Room {
         availableHarvestSpots,
         turn: turnData,
         players: this.game.players,
-        updatedBoard: additionalUpdateData!==null ? [...additionalUpdateData] : [],
+        updatedBoard: additionalUpdateData !== null ? [...additionalUpdateData] : [],
       };
     }
 

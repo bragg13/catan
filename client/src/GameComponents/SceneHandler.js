@@ -115,8 +115,9 @@ export class SceneHandler {
     I could get the townIds instead of the tileId fromthe server and then call the harvest function
     to play the animation. For surethere's also smth better to do
   */
-  diceRolled = (tileToBeHarvested) => {
-    for (let tileId of tileToBeHarvested) {
+  diceRolled = (tilesToBeHarvested) => {
+    for (let tileId of tilesToBeHarvested) {
+      // doesnt work with all of them
       let tile = this.scene.getObjectByName(`tile_${tileId}`);
       if (tile.userData.resource !== "bandits") {
         tile.harvestAnim();

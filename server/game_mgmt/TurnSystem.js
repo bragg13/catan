@@ -15,7 +15,7 @@ export class TurnSystem {
     };
 
     this.round = -1;
-    this.dice = null;
+    this.dice = { value1: 1, value2: 1 };
   }
 
   nextTurn = () => {
@@ -28,19 +28,16 @@ export class TurnSystem {
     if (this.playerOrderIndex === this.playerOrder.length)
       this.playerOrderIndex = 0;
 
-    return {
-        player: this.player,
-        action: this.action,
-        round: this.round
-    }
+    return this.getTurnData();
   };
 
   getTurnData = () => {
     return {
       player: this.player,
       action: this.action,
-      round: this.round
-  }
+      round: this.round,
+      dice: this.dice
+    }
   };
 
   nextInitialTurn = () => {
@@ -52,11 +49,7 @@ export class TurnSystem {
       // starts the game in a way
       this.round = 0
       this.action = 'diceRoll'
-      return {
-        player: this.player,
-        action: this.action,
-        round: this.round
-      }
+      return this.getTurnData();
     }
 
     // cosa puo fare in questo turno
@@ -72,7 +65,7 @@ export class TurnSystem {
       case 1:
         this.action = 'road_1'
         break;
-      
+
       case 3:
         this.action = 'road_2'
         break;
@@ -92,12 +85,8 @@ export class TurnSystem {
       if (this.playerOrderIndex === this.playerOrder.length)
         this.playerOrderIndex = 0;
 
-    } 
+    }
 
-    return {
-      player: this.player,
-      action: this.action,
-      round: this.round
-  };
+    return this.getTurnData();
   };
 }

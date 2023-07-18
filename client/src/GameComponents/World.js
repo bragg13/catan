@@ -31,7 +31,7 @@ export class World {
     this.camera.lookAt(0, 0, 0);
 
     const controls = new OrbitControls(this.camera, this.renderer.domElement);
-    
+
     // server handler
     serverHandler = new ServerHandler(socket);
   }
@@ -99,7 +99,7 @@ export class World {
         availableHarvestSpots,
         (mesh) => {
           const selectedSpotId = mesh.userData.spot_id;
-          
+
           // update scene
           this.sceneHandler.removeFromSceneByName("eg_harvest_spot");
           this.sceneHandler.harvest(selectedSpotId, player.id)
@@ -133,7 +133,7 @@ export class World {
           break;
 
         case "diceRolled":
-          this.sceneHandler.diceRolled(update.tileToBeHarvested)
+          this.sceneHandler.diceRolled(update.tilesToBeHarvested)
           break;
 
         default:
@@ -142,13 +142,13 @@ export class World {
     }
   };
 
-  handleCrafting = () => {};
+  handleCrafting = () => { };
   handleDiceRoll = (value1, value2) => {
     // send update to server
-    serverHandler.updateServer("diceRolled", { dice: {value1, value2} });
+    serverHandler.updateServer("diceRolled", { dice: { value1, value2 } });
 
   };
-  handlePassTurn = () => {};
+  handlePassTurn = () => { };
 
 }
 

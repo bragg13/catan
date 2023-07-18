@@ -4,17 +4,18 @@ import Dice from "./Dice";
 
 export default function DiceContainer({ handleDiceRoll, currentPlayer, dice }) {
   const [isEnabled, setIsEnabled] = React.useState(false);
-  const [values, setValues] = React.useState(dice === null ? null : { value1: dice.value1, value2: dice.value2 });
+  const [values, setValues] = React.useState(dice);
 
   useEffect(() => {
+    setValues(dice)
     if (
-      values !== null &&
-      currentPlayer.playing && 
+      dice !== null &&        // not loading
+      currentPlayer.playing &&  // player is playing
       currentPlayer.hasOwnProperty('availableActions') &&
       currentPlayer.availableActions[0] === "diceRoll"
     )
       setIsEnabled(true);
-  }, [currentPlayer]);
+  }, [currentPlayer, dice]);
 
   const diceRolled = () => {
     setIsEnabled(false);
@@ -22,7 +23,7 @@ export default function DiceContainer({ handleDiceRoll, currentPlayer, dice }) {
     const value2 = Math.floor(Math.random() * 6) + 1;
 
     handleDiceRoll(value1, value2);
-    setValues({ value1, value2 })
+    setValues({ value1, value2 });
   };
 
   if (values === null) return null;

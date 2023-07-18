@@ -79,7 +79,7 @@ export default function MainContainer({
                 {whoseTurn()}
               </Alert>
             </Snackbar>
-            {currentPlayer.id === turn.player && (
+            {currentPlayer.id === turn.player && whatAction().length > 0 && (
               <Snackbar
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 open={openSnackbar}
@@ -105,15 +105,21 @@ export default function MainContainer({
           handleCrafting={handleCrafting}
         />
         <Players players={players} currentPlayer={currentPlayer} />
-        <DiceContainer
-          handleDiceRoll={handleDiceRoll}
-          currentPlayer={currentPlayer}
-          dice={turn === null ? null : turn.dice}
-        />
-        <PassTurn
-          handlePassTurn={handlePassTurn}
-          isEnabled={turn === null ? false : turn.id === currentPlayer.id}
-        />
+        {
+          turn !== null && (
+            <>
+              <DiceContainer
+                handleDiceRoll={handleDiceRoll}
+                currentPlayer={currentPlayer}
+                dice={turn.dice}
+              />
+              <PassTurn
+                handlePassTurn={handlePassTurn}
+                isEnabled={turn.id === currentPlayer.id}
+              />
+            </>
+          )
+        }
       </Box>
     </>
   );
