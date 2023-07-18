@@ -108,6 +108,22 @@ export class SceneHandler {
     this.scene.add(road);
   };
 
+  // player harverst animations
+  /*
+    TODO:
+    these two functions are redundant. 
+    I could get the townIds instead of the tileId fromthe server and then call the harvest function
+    to play the animation. For surethere's also smth better to do
+  */
+  diceRolled = (tileToBeHarvested) => {
+    for (let tileId of tileToBeHarvested) {
+      let tile = this.scene.getObjectByName(`tile_${tileId}`);
+      if (tile.userData.resource !== "bandits") {
+        tile.harvestAnim();
+      }
+    }
+  }
+
   // just for animation
   harvest = (spotId) => {
     for (let tileId of townHarvest[spotId]) {

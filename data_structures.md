@@ -57,7 +57,7 @@ TurnSystem: {
     earlyGameSteps: {
         PlayerID: Number
     },
-    round: Number
+    round: Number,
 }
 
 TurnAction: String
@@ -122,7 +122,11 @@ Player: {
     turn: {
         player: PlayerID,
         action: TurnAction,
-        round: Number
+        round: Number,
+        dice: {
+            value1: Number,
+            value2: Number
+        }
     },
     players: Players
 }

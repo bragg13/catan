@@ -79,7 +79,6 @@ export class Board {
     }
 
     spawnTown = (spot_id, player_id) => {
-        console.log(spot_id, player_id)
         this.graph.buildSpot(spot_id, player_id)
     }
     spawnRoad = (from, to, player_id) => {

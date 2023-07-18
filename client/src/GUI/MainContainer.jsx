@@ -108,6 +108,7 @@ export default function MainContainer({
         <DiceContainer
           handleDiceRoll={handleDiceRoll}
           currentPlayer={currentPlayer}
+          dice={turn === null ? null : turn.dice}
         />
         <PassTurn
           handlePassTurn={handlePassTurn}

@@ -39,8 +39,6 @@ export default function PlayPage({ socket }) {
   }, [socket, loaded]);
 
   const processEarlyGameUpdate = (gameUpdate) => {
-    console.log("(early) gameUpdate", gameUpdate);
-
     // update the board
     world.current.updateScene([...gameUpdate.updatedBoard]);
 
@@ -50,7 +48,8 @@ export default function PlayPage({ socket }) {
       return { ...prevPlayers, ...gameUpdate.players };
     });
     setCurrentPlayer((prevPlayer) => {
-      return { ...prevPlayer, ...gameUpdate.players[socket.id] };
+      return { 
+        ...prevPlayer, ...gameUpdate.players[socket.id],  };
     });
 
     // play the turn (if it is mine)
@@ -60,7 +59,7 @@ export default function PlayPage({ socket }) {
   };
 
   const processGameUpdate = (gameUpdate) => {
-    console.log(gameUpdate);
+    console.log('gameUpdate', gameUpdate);
 
     // update the board
     world.current.updateScene([...gameUpdate.updatedBoard]);
@@ -74,6 +73,7 @@ export default function PlayPage({ socket }) {
       return {
         ...prevPlayer,
         ...gameUpdate.players[socket.id],
+        playing: (gameUpdate.turn.player === socket.id),
         inventory: {
           ...gameUpdate.players[socket.id].inventory,
         },
@@ -96,8 +96,8 @@ export default function PlayPage({ socket }) {
   };
 
   const handleDiceRoll = (value1, value2) => {
-    world.current.handleDiceRoll();
-    console.log("dicerolled", value1, value2)
+    // send values to server
+    world.current.handleDiceRoll(value1, value2);
   };
 
   const handlePassTurn = () => {

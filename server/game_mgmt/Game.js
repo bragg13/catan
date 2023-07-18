@@ -95,12 +95,17 @@ export class Game {
     let availableActions = [];
     let player = this.players[player_id];
     let playerInventory = player.inventory;
+    console.log(playerInventory);
 
     // === CRAFTING ===
     let availableSpotsTown = this.getAvailableSpots(player_id);
     let availableRoads = this.getAvailableSpots(player_id);
     let availableSpotsCity = this.getAvailableHarvestSpots(player_id);
 
+    console.log(availableSpotsTown);
+    console.log(availableRoads);
+    console.log(availableSpotsCity);
+    
     // check if player can afford town
     if (
       playerInventory.wood >= 1 &&
@@ -136,24 +141,36 @@ export class Game {
     if (player.dev.length > 0) {
       availableActions.push("playDev");
     }
+
+    return availableActions;
   };
+
 
   // harvest is handled here
   // should work on temp arrays TODO GENERALLY
-  diceRolled = (diceValue) => {
+  diceRolled = (player, dice) => {
+    // update dice value on turnSystem
+    this.turnSystem.dice = dice;
+
+    const diceValue = dice.value1 + dice.value2;
+    let harvestSpots = []
+
     // for each player
-    for (let player of this.players) {
+    for (let player of Object.keys(this.players)) {
       // for each of their town
-      for (let town of player.towns) {
+      for (let town of this.players[player].towns) {
         // id of the tiles I would be harvesting from
         for (let tileToBeHarvested of townHarvest[town]) {
           // if the tile has the same value as the dice
           if (this.board.getTileValue(tileToBeHarvested) === diceValue) {
-            this.harvest(tileToBeHarvested, player.id);
+            this.harvest(tileToBeHarvested, player);
+            harvestSpots.push(tileToBeHarvested)
           }
         }
       }
     }
+
+    return harvestSpots;
   };
 
   harvest = (tileId, player_id) => {

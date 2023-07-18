@@ -123,7 +123,6 @@ export class Graph {
                 }
             }
         }
-        console.log(availableRoads)
         return availableRoads
     }
 

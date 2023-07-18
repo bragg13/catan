@@ -2,12 +2,14 @@ import React, { useEffect } from "react";
 import "./Dice.css";
 import Dice from "./Dice";
 
-export default function DiceContainer({ handleDiceRoll, currentPlayer }) {
+export default function DiceContainer({ handleDiceRoll, currentPlayer, dice }) {
   const [isEnabled, setIsEnabled] = React.useState(false);
-  const [values, setValues] = React.useState({ value1: 1, value2: 1 });
+  const [values, setValues] = React.useState(dice === null ? null : { value1: dice.value1, value2: dice.value2 });
 
   useEffect(() => {
     if (
+      values !== null &&
+      currentPlayer.playing && 
       currentPlayer.hasOwnProperty('availableActions') &&
       currentPlayer.availableActions[0] === "diceRoll"
     )
@@ -23,6 +25,7 @@ export default function DiceContainer({ handleDiceRoll, currentPlayer }) {
     setValues({ value1, value2 })
   };
 
+  if (values === null) return null;
   return (
     <div
       className={`Dice-div`}

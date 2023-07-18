@@ -132,6 +132,10 @@ export class World {
           this.sceneHandler.spawnRoad(update.road.id, update.updatedBy);
           break;
 
+        case "diceRolled":
+          this.sceneHandler.diceRolled(update.tileToBeHarvested)
+          break;
+
         default:
           break;
       }
@@ -139,7 +143,11 @@ export class World {
   };
 
   handleCrafting = () => {};
-  handleDiceRoll = () => {};
+  handleDiceRoll = (value1, value2) => {
+    // send update to server
+    serverHandler.updateServer("diceRolled", { dice: {value1, value2} });
+
+  };
   handlePassTurn = () => {};
 
 }

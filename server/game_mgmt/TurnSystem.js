@@ -15,11 +15,10 @@ export class TurnSystem {
     };
 
     this.round = -1;
+    this.dice = null;
   }
 
   nextTurn = () => {
-    console.log("normal turn");
-    
     // di chi è il turno ora
     this.player = this.playerOrder[this.playerOrderIndex];
 

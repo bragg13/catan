@@ -118,11 +118,11 @@ export class Room {
         break;
 
       case "diceRolled":
-        this.game.diceRolled(
+        const tileToBeHarvested = this.game.diceRolled(
           playerUpdate.from,
-          playerUpdate.updateData.diceValue
+          playerUpdate.updateData.dice
         );
-        this.handleGame(playerUpdate);
+        this.handleGame({...playerUpdate, ...tileToBeHarvested});
         break;
 
       case "turnDone":
@@ -140,7 +140,6 @@ export class Room {
       updateData.msg === "turnDone" || updateData.msg === "clientReady"
         ? this.game.turnSystem.nextTurn()
         : this.game.turnSystem.getTurnData();
-    console.log("turnData", turnData);
 
     // list of actions the player can do
     let availableActions =
@@ -158,7 +157,7 @@ export class Room {
 
       io.to(this.id).emit("gameUpdate", gameUpdate);
 
-      console.log("[Game] Sent this update: ", gameUpdate);
+      console.log("[Game] Server sent this update: ", gameUpdate);
 
   };
 
@@ -206,7 +205,7 @@ export class Room {
     }
 
     io.to(this.id).emit("earlyGameUpdate", gameUpdate);
-    console.log("[EGame] Sent this update: ", gameUpdate);
+    console.log("[EGame] Server sent this update: ", gameUpdate);
 
   };
 }

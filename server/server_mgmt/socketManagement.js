@@ -12,8 +12,7 @@ export const generateRandomColor = () => {
 
 
 export const onConnection = socket => {
-    console.log(`user connected: ${socket.id}`)
-
+    // console.log(`user connected: ${socket.id}`)
     socket.on('join_room', data => {
         const { username, roomId } = data
         const player = {
