@@ -12,43 +12,46 @@ export const generateRandomColor = () => {
 
 
 export const onConnection = socket => {
-    // console.log(`user connected: ${socket.id}`)
     socket.on('join_room', data => {
-        const { username, roomId } = data
+        let { username, roomId } = data
         const player = {
             id: socket.id, 
-            username: username, 
+            username: username,
             color: generateRandomColor()
         }
 
-        if (roomId in rooms) {
-            // join existing room
-            if (rooms[roomId].players.length < rooms[roomId].maxPlayers) {
+        // join existing room
+        if (roomId in rooms && rooms[roomId].canJoin) {
                 rooms[roomId].joinRoom(player)
-            }
 
+        // create new room (also if roomID is full)
         } else {
-            // create new room
+            if (roomId in rooms && rooms[roomId].canJoin === false) 
+                roomId = roomId.concat(roomId)
+
             let room = new Room(roomId, 2)
             rooms[roomId] = room
             rooms[roomId].joinRoom(player)
         }
 
+        // check if room is full, start the game
         if (rooms[roomId].players.length === rooms[roomId].maxPlayers){
             rooms[roomId].createGame()
+            rooms[roomId].canJoin = false;
         }
 
     })
 
-    // socket.on('disconnecting', () => {
-    //     // get roomId
-    //     const _rooms = [...socket.rooms]
-    //     const roomId = _rooms.filter(el => el !== socket.id)
+    // deletes the room even if only one player leaves TODO.
+    socket.on('disconnecting', () => {
+        // get roomId
+        const _rooms = [...socket.rooms]
+        const roomId = _rooms.filter(el => el !== socket.id)
 
-    //     console.log(`user disconnecting ${socket.id} from ${roomId}`)
+        console.log(`user disconnecting ${socket.id} from ${roomId}`)
 
-    //     // rooms[roomId].playerLeft(socket.id)
+        delete rooms[roomId]
 
-    // })
+    })
 
 } 

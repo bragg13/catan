@@ -85,7 +85,7 @@
 }
 
 /* === MISC === */
-.PassTurn-div:hover .Dice-div:hover MainMenu-crafting-item:hover{
+.Clickable:hover {
     cursor: pointer;
 }
 

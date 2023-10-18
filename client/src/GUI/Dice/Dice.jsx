@@ -33,7 +33,7 @@ export default function Dice ({isEnabled, value}) { // For simplicity, I'll assu
   return (
     <img
       src={diceFace(value)}
-      className={`svg-icon ${isEnabled ? 'Dice-animate' : ''}`}
+      className={`svg-icon ${isEnabled ? 'Icon-animate' : ''}`}
       alt="dice face"
     />
   );

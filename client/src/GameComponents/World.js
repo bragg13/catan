@@ -60,12 +60,9 @@ export class World {
     const availableHarvestSpots = serverData.availableHarvestSpots;
 
     if (availableSpots !== null) {
-      console.log("seleziona un posto dove costruire una TOWN");
-
       // mostro spot available per una town
       this.sceneHandler.showAvailableSpots(availableSpots, (mesh) => {
         const selectedSpotId = mesh.userData.spot_id;
-        console.log('selected', selectedSpotId)
 
         // update scene
         this.sceneHandler.removeFromSceneByName("placeable_town");
@@ -77,8 +74,6 @@ export class World {
         });
       });
     } else if (availableRoads !== null) {
-      console.log("seleziona un posto dove costruire una ROAD");
-
       // mostro spot available per una road
       this.sceneHandler.showAvailableRoads(availableRoads, (mesh) => {
         const { from, to, id } = mesh.userData.roadData;
@@ -94,7 +89,6 @@ export class World {
       });
     } else {
       // decide which spot is harvesting for the first time
-      console.log("seleziona un posto da cui raccogliere");
       this.sceneHandler.showAvailableHarvestSpots(
         availableHarvestSpots,
         (mesh) => {
@@ -121,7 +115,9 @@ export class World {
   }
 
   updateScene = (updateData) => {
+    console.log(`UPDATE DATA:`);
     console.log(updateData);
+    
     for (let update of updateData) {
       switch (update.msg) {
         case "newTown":
@@ -144,11 +140,11 @@ export class World {
 
   handleCrafting = () => { };
   handleDiceRoll = (value1, value2) => {
-    // send update to server
     serverHandler.updateServer("diceRolled", { dice: { value1, value2 } });
-
   };
-  handlePassTurn = () => { };
+  handlePassTurn = () => {
+    serverHandler.updateServer("turnDone", {});
+  };
 
 }
 

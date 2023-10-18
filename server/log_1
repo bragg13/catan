@@ -1,0 +1,76 @@
+
+> server@1.0.0 start
+> node index.js
+
+Server is running on port 4000
+user disconnecting 0MHkKIE9z0Hz0-OrAAAB from 
+user disconnecting FT9yH8K6Xx9cCDfoAAAD from 
+user disconnecting pnoYZiVn2apuKQEKAAAF from 
+user disconnecting ZCFHIDaZ9dZXO_uIAAAH from 
+=====
+[PlayerUpdate] QxWiyffewukytJuNAAAJ: earlyGameClientReady
+=====
+[PlayerUpdate] 5Xl3fY6PvoY6f87RAAAL: earlyGameClientReady
+user disconnecting QxWiyffewukytJuNAAAJ from asd
+=====
+[PlayerUpdate] 5Xl3fY6PvoY6f87RAAAL: earlyGameClientReady
+user disconnecting qSv0Q_WM1o0WKpTxAAAN from 
+user disconnecting 5Xl3fY6PvoY6f87RAAAL from asd
+=====
+[PlayerUpdate] 6PMmPiUZC_Badx7_AAAR: earlyGameClientReady
+=====
+[PlayerUpdate] SkL7FlWGV2Re85C1AAAP: earlyGameClientReady
+=====
+[PlayerUpdate] 6PMmPiUZC_Badx7_AAAR: earlyGameClientReady
+=====
+[PlayerUpdate] SkL7FlWGV2Re85C1AAAP: earlyGameClientReady
+user disconnecting SkL7FlWGV2Re85C1AAAP from dsa
+user disconnecting 6PMmPiUZC_Badx7_AAAR from dsa
+=====
+[PlayerUpdate] qByDoFNpA-2I1qvpAAAV: earlyGameClientReady
+=====
+[PlayerUpdate] VQXTIAEm68J0VPeYAAAT: earlyGameClientReady
+=====
+[PlayerUpdate] VQXTIAEm68J0VPeYAAAT: earlyGameClientReady
+=====
+[PlayerUpdate] qByDoFNpA-2I1qvpAAAV: earlyGameClientReady
+=====
+[PlayerUpdate] VQXTIAEm68J0VPeYAAAT: earlyGameClientReady
+=====
+[PlayerUpdate] VQXTIAEm68J0VPeYAAAT: earlyGameClientReady
+=====
+[PlayerUpdate] qByDoFNpA-2I1qvpAAAV: earlyGameClientReady
+user disconnecting VQXTIAEm68J0VPeYAAAT from u
+user disconnecting qByDoFNpA-2I1qvpAAAV from u
+=====
+[PlayerUpdate] axCUH9zcnc0giYHqAAAX: earlyGameClientReady
+=====
+[PlayerUpdate] 21dhNKE8W3izc3P9AAAZ: earlyGameClientReady
+=====
+[PlayerUpdate] axCUH9zcnc0giYHqAAAX: selectedHarvestSpot
+Player axCUH9zcnc0giYHqAAAX is harvesting tile 1
+Player axCUH9zcnc0giYHqAAAX harvested wood with total of 1
+Player axCUH9zcnc0giYHqAAAX is harvesting tile 2
+Player axCUH9zcnc0giYHqAAAX harvested clay with total of 1
+Player axCUH9zcnc0giYHqAAAX is harvesting tile 5
+Player axCUH9zcnc0giYHqAAAX harvested rocks with total of 1
+=====
+[PlayerUpdate] axCUH9zcnc0giYHqAAAX: clientReady
+=====
+[PlayerUpdate] 21dhNKE8W3izc3P9AAAZ: selectedHarvestSpot
+Player 21dhNKE8W3izc3P9AAAZ is harvesting tile 8
+Player 21dhNKE8W3izc3P9AAAZ harvested clay with total of 1
+Player 21dhNKE8W3izc3P9AAAZ is harvesting tile 9
+Player 21dhNKE8W3izc3P9AAAZ harvested sheep with total of 1
+Player 21dhNKE8W3izc3P9AAAZ is harvesting tile 13
+Player 21dhNKE8W3izc3P9AAAZ harvested wheat with total of 1
+=====
+[PlayerUpdate] 21dhNKE8W3izc3P9AAAZ: clientReady
+=====
+[PlayerUpdate] axCUH9zcnc0giYHqAAAX: diceRolled
+	Available actions for player axCUH9zcnc0giYHqAAAX: {"road":{"quantity":1,"spots":[{"from":"9","to":"5","id":"8"},{"from":"9","to":"14","id":"14"},{"from":"13","to":"8","id":"12"},{"from":"13","to":"18","id":"20"},{"from":"15","to":"10","id":"16"},{"from":"15","to":"20","id":"22"},{"from":"11","to":"7","id":"10"},{"from":"11","to":"16","id":"18"}]}}
+=====
+[PlayerUpdate] axCUH9zcnc0giYHqAAAX: diceRolled
+Player axCUH9zcnc0giYHqAAAX harvested wood with total of 2
+Player 21dhNKE8W3izc3P9AAAZ harvested wheat with total of 2
+	Available actions for player axCUH9zcnc0giYHqAAAX: {"road":{"quantity":1,"spots":[{"from":"9","to":"5","id":"8"},{"from":"9","to":"14","id":"14"},{"from":"13","to":"8","id":"12"},{"from":"13","to":"18","id":"20"},{"from":"15","to":"10","id":"16"},{"from":"15","to":"20","id":"22"},{"from":"11","to":"7","id":"10"},{"from":"11","to":"16","id":"18"}]}}

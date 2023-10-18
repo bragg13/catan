@@ -35,11 +35,6 @@ export class Game {
   gameInitialise = () => {
     this.turnSystem = new TurnSystem(this.players);
     this.board = new Board(this.players);
-
-    console.log("towns spawned");
-    console.log("roads spawned");
-
-    console.log("game created");
   };
 
   // debug
@@ -59,7 +54,7 @@ export class Game {
       updateData.push(this.debugRoadSpawn(37, 32, 47, players[1].id));
 
       return updateData
-      
+
     }
   };
 
@@ -92,56 +87,67 @@ export class Game {
   };
 
   getAvailableActions = (player_id) => {
-    let availableActions = [];
+    let availableActions = {};
     let player = this.players[player_id];
     let playerInventory = player.inventory;
-    console.log(playerInventory);
 
-    // === CRAFTING ===
     let availableSpotsTown = this.getAvailableSpots(player_id);
-    let availableRoads = this.getAvailableSpots(player_id);
+    let availableSpotsRoad = this.getAvailableRoads(player_id);
     let availableSpotsCity = this.getAvailableHarvestSpots(player_id);
 
-    console.log(availableSpotsTown);
-    console.log(availableRoads);
-    console.log(availableSpotsCity);
-    
-    // check if player can afford town
-    if (
-      playerInventory.wood >= 1 &&
-      playerInventory.clay >= 1 &&
-      playerInventory.sheep >= 1 &&
-      playerInventory.wheat >= 1
-    ) {
-      if (availableSpotsTown.length > 0) availableActions.push("town");
+    // check if player can build towns
+    const affordableTowns = this.getAffordableTowns(playerInventory)
+    if (affordableTowns > 0 && availableSpotsTown.length > 0) {
+      availableActions["town"] = {
+        quantity: Math.min(affordableTowns, availableSpotsTown.length),
+        spots: availableSpotsTown
+      }
     }
 
-    // check if player can afford city
-    if (playerInventory.rocks >= 3 && playerInventory.wheat >= 2) {
-      if (availableSpotsCity.length > 0) availableActions.push("city");
+    // check if player can build roads
+    const affordableRoads = this.getAffordableRoads(playerInventory)
+    if (affordableRoads > 0 && availableSpotsRoad.length > 0) {
+      availableActions["road"] = {
+        quantity: Math.min(affordableRoads, availableSpotsRoad.length),
+        spots: availableSpotsRoad
+      }
     }
 
-    // check if player can afford road
-    if (playerInventory.wood >= 1 && playerInventory.clay >= 1) {
-      if (availableRoads.length > 0)
-        // useless?
-        availableActions.push("road");
+    // check if player can build cities
+    const affordableCities = this.getAffordableCities(playerInventory)
+    if (affordableCities > 0 && availableSpotsCity.length > 0) {
+      availableActions["city"] = {
+        quantity: Math.min(affordableCities, availableSpotsCity.length),
+        spots: availableSpotsCity
+      }
     }
 
-    // check if player can afford dev card
-    if (
-      playerInventory.sheep >= 1 &&
-      playerInventory.wheat >= 1 &&
-      playerInventory.rocks >= 1
-    ) {
-      availableActions.push("dev");
+    // check if player can trade TODO later (per ora c'e tutto l'inventario)
+    if (!this.isInventoryEmpty(playerInventory))
+    availableActions['trade'] = {
+      ...playerInventory
     }
 
-    // === DEV CARDS ===
+    // check if player can afford dev cards
+    const affordableDevs = this.getAffordableDev(playerInventory)
+    if (affordableDevs > 0) {
+      availableActions["buildDev"] = {
+        quantity: affordableDevs
+      }
+    }
+
+    // check if player can play dev cards
+    // TODO: distinguish between victory points and knights/whatevs
     if (player.dev.length > 0) {
-      availableActions.push("playDev");
+      availableActions["playDev"] = {
+        quantity: player.dev.length
+      }
     }
 
+    // always available actions - polezno?
+    availableActions['passTurn'] = true;
+
+    console.log(`\tAvailable actions for player ${player_id}: ${JSON.stringify(availableActions)}`)
     return availableActions;
   };
 
@@ -222,4 +228,34 @@ export class Game {
       this.harvest(tile, player_id);
     }
   };
+
+  // affordability - dovrebbe funzionare ma tbh non ne ho idea
+  getAffordableTowns = (inv) => {
+    return Math.min(
+      inv.wood,
+      inv.clay,
+      inv.sheep,
+      inv.wheat)
+  }
+  getAffordableRoads = (inv) => {
+    return Math.min(
+      inv.wood,
+      inv.clay)
+  }
+  getAffordableCities = (inv) => {
+    const rocks = Math.floor(inv.rocks / 3);
+    const wheat = Math.floor(inv.wheat / 2);
+
+    return Math.min(rocks, wheat)
+  }
+  getAffordableDev = (inv) => {
+    return Math.min(
+      inv.rocks,
+      inv.sheep,
+      inv.wheat)
+  }
+
+  isInventoryEmpty = (inv) => {
+    return inv.wood>0&&inv.rocks>0&&inv.sheep>0&&inv.wheat>0&&inv.clay>0
+  }
 }

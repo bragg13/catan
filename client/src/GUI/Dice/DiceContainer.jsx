@@ -12,7 +12,7 @@ export default function DiceContainer({ handleDiceRoll, currentPlayer, dice }) {
       dice !== null &&        // not loading
       currentPlayer.playing &&  // player is playing
       currentPlayer.hasOwnProperty('availableActions') &&
-      currentPlayer.availableActions[0] === "diceRoll"
+      "diceRoll" in currentPlayer.availableActions 
     )
       setIsEnabled(true);
   }, [currentPlayer, dice]);
@@ -29,7 +29,7 @@ export default function DiceContainer({ handleDiceRoll, currentPlayer, dice }) {
   if (values === null) return null;
   return (
     <div
-      className={`Dice-div`}
+      className={`Dice-div ${isEnabled ? 'Clickable' : ''}`}
       onClick={isEnabled ? diceRolled : null}
     >
       <Dice isEnabled={isEnabled} value={values.value1} />

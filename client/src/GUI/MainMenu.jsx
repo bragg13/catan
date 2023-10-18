@@ -56,11 +56,14 @@ export default function MainMenu({ currentPlayer, handleCrafting }) {
         )
     );
   };
+
+  // un po da riformattare sto schifo
   const renderCraftingItems = (items) => {
     return crafting.map((res) => (
       <Stack
         key={crypto.randomUUID()}
-        className="MainMenu-item"
+        className={`MainMenu-item ${currentPlayer.availableActions !== undefined &&
+          res.name in currentPlayer.availableActions? 'Clickable' : ''}`}
         gap={3}
         direction={"row"}
         onClick={() => {
@@ -70,14 +73,15 @@ export default function MainMenu({ currentPlayer, handleCrafting }) {
         <Badge
           badgeContent={
             currentPlayer.availableActions !== undefined &&
-            res.name in currentPlayer.availableActions
-              ? 1
-              : 0
+              res.name in currentPlayer.availableActions
+              ? currentPlayer.availableActions[res.name].quantity : 0
           }
-          color="primary"
+          color="error"
         >
           <SvgIcon
-            className="IconGUI-medium"
+            className={`IconGUI-medium ${currentPlayer.availableActions !== undefined &&
+              res.name in currentPlayer.availableActions
+              ? 'Icon-animate' : ''}`}
             component={res.icon}
             inheritViewBox
           />

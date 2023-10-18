@@ -21,6 +21,8 @@ export default function PlayPage({ socket }) {
     world.current = new World("three-js-canvas", socket);
     world.current.initialize(initialGameState);
 
+    // I NEED TO USE A REDUCER HERE
+
     // initialize the GUI
     setPlayers(initialGameState.players);
     setTurn(initialGameState.turn);
@@ -31,9 +33,7 @@ export default function PlayPage({ socket }) {
   // listen to server updates
   useEffect(() => {
     if (loaded) {
-      socket.on("earlyGameUpdate", (updateData) =>
-        processEarlyGameUpdate(updateData)
-      );
+      socket.on("earlyGameUpdate", (updateData) => processEarlyGameUpdate(updateData));
       socket.on("gameUpdate", (updateData) => processGameUpdate(updateData));
     }
   }, [socket, loaded]);
@@ -80,7 +80,7 @@ export default function PlayPage({ socket }) {
       };
     });
     setAvailableActions((prevActions) => {
-      return [...prevActions, ...gameUpdate.availableActions];
+      return {...prevActions, ...gameUpdate.availableActions};
     });
 
     console.log("currentPlayer", currentPlayer);
@@ -113,7 +113,7 @@ export default function PlayPage({ socket }) {
         handlePassTurn={handlePassTurn}
         players={players}
         currentPlayer={
-          availableActions.length > 0
+          availableActions !== undefined 
             ? {
                 ...currentPlayer,
                 availableActions: availableActions,

@@ -9,6 +9,7 @@ export class Room {
     this.players = [];
     this.playersReady = [];
     this.gameStatus = "lobby";
+    this.canJoin = true;
 
     this.game = null;
   }
@@ -34,7 +35,7 @@ export class Room {
   };
 
   createGame = () => {
-    this.gameStatus = "created";
+    this.gameStatus = "created"; // polezno?
 
     this.game = new Game(this.id, this.players);
     this.game.gameInitialise();
@@ -57,8 +58,9 @@ export class Room {
     });
   };
 
+  
   processPlayerUpdate = (playerUpdate) => {
-    console.log(`[PlayerUpdate] ${playerUpdate.from}: ${playerUpdate.msg}`);
+    console.log(`=====\n[PlayerUpdate] ${playerUpdate.from}: ${playerUpdate.msg}`);
 
     switch (playerUpdate.msg) {
       case "earlyGameClientReady":
@@ -150,15 +152,12 @@ export class Room {
     // send update to players
     const gameUpdate = {
       turn: turnData,
-      availableActions: availableActions,
+      availableActions: {...availableActions},
       players: this.game.players,
       updatedBoard: [{ ...updateData }]   // to be changed
     }
 
     io.to(this.id).emit("gameUpdate", gameUpdate);
-
-    console.log("[Game] Server sent this update: ", gameUpdate);
-
   };
 
   handleEarlyGame = (additionalUpdateData = null) => {
@@ -205,7 +204,5 @@ export class Room {
     }
 
     io.to(this.id).emit("earlyGameUpdate", gameUpdate);
-    console.log("[EGame] Server sent this update: ", gameUpdate);
-
   };
 }

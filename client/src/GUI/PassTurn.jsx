@@ -5,10 +5,10 @@ import "./GUIStyle.css";
 export default function PassTurn({ handlePassTurn, isEnabled }) {
   return (
     <div
-      className={`PassTurn-div ${isEnabled && ".GUI-disabled"}`}
+      className={`PassTurn-div ${isEnabled ? "Clickable" : ''}`}
       onClick={isEnabled ? handlePassTurn : null}
     >
-      <SkipNextIcon className="IconGUI-big" />
+      <SkipNextIcon className={`IconGUI-big ${isEnabled ? 'Icon-animate' : ''}`} />
     </div>
   );
 }
